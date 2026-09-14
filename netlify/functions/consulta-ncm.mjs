@@ -59,6 +59,7 @@ export default async (req) => {
     cclasstrib: agregador.cclasstrib,
     cst: agregador.cst,
     regimeGeral: agregador.regimeGeral,
+    semCodigoUnico: agregador.semCodigoUnico,
     respostaResumo: agregador.respostaCst,
     respostaDetalhe: agregador.respostaReforma,
     fonte: FONTE_AGREGADOR,
@@ -117,14 +118,26 @@ async function consultarAgregador(ncm) {
 
   const cclasstribMatch = respostaCst.match(/cClassTrib\s+(\d{6})/);
   const cstMatch = respostaCst.match(/CST IBS\/CBS\s+(\d{3})/);
+  const cclasstrib = cclasstribMatch ? cclasstribMatch[1] : null;
+  const cst = cstMatch ? cstMatch[1] : null;
+
+  // Alguns produtos (tipicamente sujeitos a Imposto Seletivo, como bebidas
+  // alcoólicas e cigarros) não têm um cClassTrib único — o código varia
+  // conforme a operação. Nesse caso "regimeGeral" fica null (nem
+  // "regime geral" nem "benefício confirmado" — depende de caso a caso),
+  // em vez de cair como false por padrão (o que sugeriria erradamente que
+  // é sempre benefício/redução).
+  let regimeGeral = null;
+  if (cst !== null) regimeGeral = cst === "000";
 
   return {
     titulo,
     respostaCst,
     respostaReforma,
-    cclasstrib: cclasstribMatch ? cclasstribMatch[1] : null,
-    cst: cstMatch ? cstMatch[1] : null,
-    regimeGeral: (cstMatch ? cstMatch[1] : null) === "000",
+    cclasstrib,
+    cst,
+    regimeGeral,
+    semCodigoUnico: cclasstrib === null && cst === null,
   };
 }
 

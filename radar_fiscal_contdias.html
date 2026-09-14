@@ -1368,11 +1368,23 @@
           '<div class="iss-miss-note">' + formatarRespostaNcm(d.mensagem) + '</div>';
         return;
       }
-      var badgeCor = d.regimeGeral ? 'baixo' : 'alto';
-      var badgeTxt = d.regimeGeral ? 'REGIME GERAL' : 'BENEFÍCIO / REDUÇÃO';
+      var badgeCor, badgeTxt, codigoTxt;
+      if (d.semCodigoUnico){
+        badgeCor = 'medio';
+        badgeTxt = 'VARIA POR OPERAÇÃO';
+        codigoTxt = 'sem código único — depende da operação';
+      } else if (d.regimeGeral){
+        badgeCor = 'baixo';
+        badgeTxt = 'REGIME GERAL';
+        codigoTxt = 'cClassTrib ' + d.cclasstrib + ' &middot; CST ' + d.cst;
+      } else {
+        badgeCor = 'alto';
+        badgeTxt = 'BENEFÍCIO / REDUÇÃO';
+        codigoTxt = 'cClassTrib ' + d.cclasstrib + ' &middot; CST ' + d.cst;
+      }
       var html =
         '<div class="iss-result-head"><span class="iss-result-muni">' + d.titulo + '</span>' +
-        '<span class="iss-result-code">cClassTrib ' + d.cclasstrib + ' &middot; CST ' + d.cst + '</span></div>' +
+        '<span class="iss-result-code">' + codigoTxt + '</span></div>' +
         '<div><span class="badge-impacto ' + badgeCor + '">' + badgeTxt + '</span></div>' +
         '<div class="iss-regra-card"><div class="iss-regra-head"><span class="iss-regra-title">Como informar na NF-e</span></div>' +
         '<div class="iss-regra-row"><span class="k"></span><span class="v">' + formatarRespostaNcm(d.respostaResumo) + '</span></div></div>';
