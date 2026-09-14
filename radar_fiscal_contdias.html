@@ -1380,7 +1380,19 @@
         html += '<div class="iss-regra-card"><div class="iss-regra-head"><span class="iss-regra-title">Enquadramento na Reforma</span></div>' +
           '<div class="iss-regra-row"><span class="k"></span><span class="v">' + formatarRespostaNcm(d.respostaDetalhe) + '</span></div></div>';
       }
-      html += '<div class="iss-hint">Fonte: ' + d.fonte + ', consultado agora. Se o benefício for condicional, confirme se este produto específico se encaixa na condição exigida.</div>';
+      if (d.oficial){
+        var of = d.oficial;
+        var descOficial = [of.capitulo, of.posicao, of.subitem].filter(Boolean).join(' — ');
+        html += '<div class="iss-regra-card" style="border-left-color:#0F6B52">' +
+          '<div class="iss-regra-head"><span class="iss-regra-title">&#9989; Confirmado pela Receita Federal</span>' +
+          '<span class="iss-regra-scope">' + d.fonteOficial + '</span></div>' +
+          '<div class="iss-regra-row"><span class="k">Descrição oficial</span><span class="v">' + formatarRespostaNcm(descOficial) + '</span></div>' +
+          '<div class="iss-regra-row"><span class="k">Imposto Seletivo</span><span class="v">' + (of.tributadoPeloImpostoSeletivo ? 'Sim — este produto É tributado pelo Imposto Seletivo.' : 'Não — este produto não é tributado pelo Imposto Seletivo.') + '</span></div>' +
+          '</div>';
+      } else if (d.oficialErro){
+        html += '<div class="iss-hint">&#9888; Não consegui cruzar com a Receita Federal agora: ' + formatarRespostaNcm(d.oficialErro) + '</div>';
+      }
+      html += '<div class="iss-hint">Fonte do cClassTrib/CST: ' + d.fonte + ' (agregador, não oficial), consultado agora. Se o benefício for condicional, confirme se este produto específico se encaixa na condição exigida.</div>';
       resultEl.innerHTML = html;
     } catch (e){
       resultEl.innerHTML = '<div class="iss-miss-note">Não consegui consultar agora. Tente de novo em instantes.</div>';
