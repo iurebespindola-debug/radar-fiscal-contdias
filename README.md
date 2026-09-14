@@ -4,6 +4,8 @@ Um painel que reúne, todo dia, as notícias estritamente tributárias mais impo
 
 O radar só traz notícias que envolvem **alíquota de imposto, alteração de declarações fiscais/obrigações acessórias, NCM, CFOP, CST, parcelamentos e benefícios fiscais** — assuntos de RH, saúde, eventos e notícias administrativas genéricas ficam de fora automaticamente.
 
+Também tem uma aba **🧾 Consulta ISS**, com alíquota de ISS por município (base do Portal Nacional da NFS-e, gov.br/nfse) e as regras de onde o imposto é devido e se há retenção obrigatória, segundo a LC 116/2003. Essa base é **verificada e atualizada automaticamente todo dia** — o script checa se o governo publicou um arquivo novo e, se sim, já substitui os dados no painel sozinho. Se alguma notícia do dia mencionar a LC 116/2003 (sinal de possível mudança na lei), o boletim por e-mail avisa — mas as regras jurídicas da aba não são reescritas sozinhas, por segurança; nesse caso, alguém revisa e pede pra eu atualizar o texto.
+
 Você recebeu 3 arquivos:
 
 | Arquivo | Para que serve |
