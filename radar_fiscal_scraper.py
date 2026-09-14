@@ -24,7 +24,9 @@ import base64
 import json
 import os
 import re
+import shutil
 import smtplib
+import subprocess
 import sys
 import traceback
 import xml.etree.ElementTree as ET
@@ -669,6 +671,68 @@ def atualizar_html(itens, caminho_html=HTML_PATH):
 
 
 # =========================================================================
+# PUBLICAÇÃO AUTOMÁTICA (GitHub -> Netlify)
+# =========================================================================
+# Depois de atualizar o HTML local, copia para index.html e manda pro
+# GitHub. O Netlify está configurado para publicar sozinho a cada push
+# nesse repositório — então isso é o que faz o link do painel (o mesmo
+# link sempre) refletir a coleta mais recente, sem intervenção manual.
+# Se o git não estiver configurado (sem repositório, sem remoto, sem
+# login salvo), só avisa e segue em frente — não trava o resto do script.
+
+INDEX_PATH = BASE_DIR / "index.html"
+
+
+def _git_exe():
+    encontrado = shutil.which("git")
+    if encontrado:
+        return encontrado
+    for candidato in (
+        r"C:\Program Files\Git\cmd\git.exe",
+        r"C:\Program Files\Git\bin\git.exe",
+        r"C:\Program Files (x86)\Git\cmd\git.exe",
+    ):
+        if Path(candidato).exists():
+            return candidato
+    return None
+
+
+def publicar_no_github():
+    git = _git_exe()
+    if not git:
+        print("[publicacao] git não encontrado — pulando publicação online.")
+        return
+
+    try:
+        shutil.copyfile(HTML_PATH, INDEX_PATH)
+
+        def rodar(*args):
+            return subprocess.run(
+                [git, *args], cwd=BASE_DIR, capture_output=True, text=True, timeout=60
+            )
+
+        rodar("add", "index.html")
+        commit = rodar("commit", "-m", f"Atualizacao automatica {datetime.now(TZ_BR).strftime('%Y-%m-%d %H:%M')}")
+        saida_commit = (commit.stdout + commit.stderr).lower()
+        sem_mudanca = "nothing to commit" in saida_commit or "no changes added to commit" in saida_commit
+        if commit.returncode != 0 and not sem_mudanca:
+            print(f"[publicacao] Falha ao commitar: {commit.stderr.strip()}")
+            return
+        if sem_mudanca:
+            print("[publicacao] Painel sem mudanças desde a última publicação — nada a enviar.")
+            return
+
+        push = rodar("push", "origin", "main")
+        if push.returncode != 0:
+            print(f"[publicacao] Falha ao publicar no GitHub: {push.stderr.strip()}")
+            return
+
+        print("[publicacao] Painel publicado no GitHub — o Netlify vai atualizar o link em instantes.")
+    except Exception as e:
+        print(f"[publicacao] Erro inesperado ao publicar: {e}")
+
+
+# =========================================================================
 # BOLETIM POR E-MAIL (opcional)
 # =========================================================================
 
@@ -884,6 +948,7 @@ def enviar_boletim_email(itens):
 
 def main():
     enviar_email = "--sem-email" not in sys.argv
+    publicar_online = "--sem-publicar" not in sys.argv
 
     print("=" * 60)
     print("Radar Fiscal Contdias — iniciando coleta em", datetime.now(TZ_BR).strftime("%d/%m/%Y %H:%M"))
@@ -899,6 +964,9 @@ def main():
     print(f"\nTotal de notícias únicas coletadas: {len(itens)}")
 
     ok = atualizar_html(itens)
+
+    if ok and publicar_online:
+        publicar_no_github()
 
     if enviar_email:
         enviar_boletim_email(itens)

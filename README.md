@@ -143,5 +143,3 @@ Sites de governo mudam de layout com alguma frequência, então de tempos em tem
 ---
 
 *Prompt original desenvolvido por Nathara Muniz (Conta Mais) · Painel e script montados com Claude (Anthropic) · Setembro/2026*
-
-<!-- teste de push automatico -->
