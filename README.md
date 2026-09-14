@@ -6,6 +6,8 @@ O radar só traz notícias que envolvem **alíquota de imposto, alteração de d
 
 Também tem uma aba **🧾 Consulta ISS**, com alíquota de ISS por município (base do Portal Nacional da NFS-e, gov.br/nfse) e as regras de onde o imposto é devido e se há retenção obrigatória, segundo a LC 116/2003. Essa base é **verificada e atualizada automaticamente todo dia** — o script checa se o governo publicou um arquivo novo e, se sim, já substitui os dados no painel sozinho. Se alguma notícia do dia mencionar a LC 116/2003 (sinal de possível mudança na lei), o boletim por e-mail avisa — mas as regras jurídicas da aba não são reescritas sozinhas, por segurança; nesse caso, alguém revisa e pede pra eu atualizar o texto.
 
+Tem ainda uma aba **🔍 Consulta NCM**: digite o NCM e o painel consulta ao vivo (via uma função do Netlify, em `netlify/functions/consulta-ncm.mjs`) o cClassTrib e o CST IBS/CBS de referência para aquele produto na Reforma Tributária (LC 214/2025 + LC 227/2026), e avisa se é regime geral ou tem redução/benefício. A fonte é o buscadorncm.com.br (agregador especializado, não é fonte oficial do governo) — para benefícios condicionais, sempre confirme se a descrição real do produto se encaixa na condição exigida antes de aplicar. Para conferir uma planilha inteira de produtos de um cliente (com cruzamento de duas fontes e nível de confiança por item), isso continua sendo feito comigo numa conversa, não pelo painel — é um trabalho de análise, não uma consulta simples.
+
 Você recebeu 3 arquivos:
 
 | Arquivo | Para que serve |
