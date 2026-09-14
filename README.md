@@ -86,15 +86,18 @@ Se alguma fonte falhar (é normal — sites de governo mudam de endereço de vez
 
 ---
 
-## 5. Colocar o painel online (opcional)
+## 5. Painel online (link fixo, sempre atualizado)
 
-Se quiser um link que você possa acessar de qualquer lugar (ou mandar para colegas):
+O painel também está publicado em:
 
-1. Acesse **netlify.com** e crie uma conta gratuita.
-2. Arraste o arquivo `radar_fiscal_contdias.html` para a área indicada no site.
-3. Em segundos você recebe um link público.
+**https://melodious-melba-98d754.netlify.app**
 
-**Atenção:** se fizer isso, você vai precisar subir o arquivo novamente (arrastar de novo) cada vez que rodar o `radar_fiscal_scraper.py` e quiser que o link online mostre as notícias mais recentes — a atualização automática do link só acontece se você configurar algo mais avançado (posso te ajudar com isso se quiser, depois).
+Esse link é permanente e se atualiza **sozinho** a cada coleta — não precisa fazer nada. Funciona assim: a cada execução do `radar_fiscal_scraper.py`, o script publica automaticamente uma cópia do painel (`index.html`) no repositório GitHub `radar-fiscal-contdias`, e o Netlify está configurado para publicar sozinho a cada envio (push) para esse repositório.
+
+Se um dia o link parar de atualizar, os pontos para checar são:
+1. O computador rodou a coleta hoje? (veja o Agendador de Tarefas)
+2. O Git está autenticado? Rode `git push` manualmente na pasta do projeto — se pedir login, faça o login de novo.
+3. O site no Netlify ainda está conectado ao repositório certo? (em Site configuration → Build & deploy)
 
 ---
 
