@@ -392,6 +392,7 @@
     <button data-filtro="todos" class="ativo">Radar do Dia</button>
     <button data-filtro="reforma">Reforma Tributária</button>
     <button data-filtro="iss">🧾 Consulta ISS</button>
+    <button data-filtro="ncm">🔍 Consulta NCM</button>
     <button data-esfera="Federal">Federal</button>
     <button data-esfera="Estadual">Estadual</button>
     <button data-esfera="Municipal">Municipal</button>
@@ -492,6 +493,36 @@
       <div class="iss-stat-strip" id="iss-statStrip"></div>
       <div>Fonte: <a href="https://www.gov.br/nfse/pt-br/biblioteca/perguntas-e-respostas/aliquotas" target="_blank" rel="noopener">Alíquotas de ISSQN — Portal da Nota Fiscal de Serviço eletrônica (gov.br/nfse)</a>, arquivo extraído em 03/09/2026.</div>
       <div>A base cobre apenas os municípios que já publicaram alíquotas na Plataforma Nacional. Diversas capitais (São Paulo, Rio de Janeiro, Belo Horizonte, Brasília, entre outras) ainda operam sistema próprio e não constam aqui — confirme nesses casos diretamente na legislação municipal. Este resultado é informativo e não substitui a lei municipal vigente.</div>
+    </div>
+  </div>
+
+  <div id="ncm-painel" style="display:none" class="iss-painel">
+    <div class="iss-header">
+      <span class="iss-eyebrow">&#128269; Reforma Tributária &middot; IBS/CBS/Imposto Seletivo</span>
+      <h1 class="iss-h1">Consulta de classificação tributária por NCM</h1>
+      <p class="iss-lede">Digite o NCM (8 dígitos) para ver o <strong>cClassTrib</strong> e o <strong>CST IBS/CBS</strong> de referência, e se o produto tem redução/benefício ou está no regime geral, segundo a LC 214/2025 (com as alterações da LC 227/2026).</p>
+    </div>
+
+    <div class="iss-query-layout">
+      <div class="iss-card iss-search-card">
+        <div class="iss-fields">
+          <div class="iss-field">
+            <label for="ncm-input">NCM</label>
+            <input type="text" id="ncm-input" autocomplete="off" placeholder="6109.10.00" maxlength="12">
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button class="iss-consultar" id="ncm-btnConsultar">Consultar NCM</button>
+          <span class="iss-hint">Consulta ao vivo — leva alguns segundos.</span>
+        </div>
+      </div>
+
+      <div class="iss-card iss-result" id="ncm-result"></div>
+    </div>
+
+    <div class="iss-footer">
+      <div>Fonte: <a href="https://buscadorncm.com.br" target="_blank" rel="noopener">buscadorncm.com.br</a> — agregador especializado em NCM/Reforma Tributária, consultado ao vivo a cada busca (não é fonte oficial do governo).</div>
+      <div>Muitos benefícios são <strong>condicionais</strong> (dependem de uma característica específica do produto ou da operação, não só do NCM). Para produtos com benefício condicional, confirme se a descrição real do produto se encaixa na condição exigida — ou peça uma conferência completa se for para uma planilha de vários produtos.</div>
     </div>
   </div>
 </main>
@@ -962,9 +993,11 @@
   function renderCards(){
     var modoReforma = estado.filtroMenu === 'reforma';
     var modoIss = estado.filtroMenu === 'iss';
-    var modoEspecial = modoReforma || modoIss;
+    var modoNcm = estado.filtroMenu === 'ncm';
+    var modoEspecial = modoReforma || modoIss || modoNcm;
     document.getElementById('reforma-painel').style.display = modoReforma ? '' : 'none';
     document.getElementById('iss-painel').style.display = modoIss ? '' : 'none';
+    document.getElementById('ncm-painel').style.display = modoNcm ? '' : 'none';
     document.getElementById('grid-cards').style.display = modoEspecial ? 'none' : '';
     document.querySelector('.toolbar').style.display = modoEspecial ? 'none' : '';
     document.getElementById('contagem-itens').style.display = modoEspecial ? 'none' : '';
@@ -1003,6 +1036,9 @@
       } else if (btn.dataset.filtro === 'iss'){
         estado.filtroMenu = 'iss';
         document.getElementById('titulo-secao').textContent = 'Consulta ISS';
+      } else if (btn.dataset.filtro === 'ncm'){
+        estado.filtroMenu = 'ncm';
+        document.getElementById('titulo-secao').textContent = 'Consulta NCM';
       } else if (btn.dataset.esfera){
         estado.filtroMenu = 'todos';
         estado.esfera = btn.dataset.esfera;
@@ -1297,6 +1333,64 @@
   });
 
   loadData();
+})();
+</script>
+
+<script>
+(function(){
+  var badgeTextoNcm = { alto: 'Alto impacto', medio: 'Médio impacto', baixo: 'Baixo impacto' };
+
+  function formatarRespostaNcm(txt){
+    if (!txt) return '';
+    return txt.replace(/</g, '&lt;');
+  }
+
+  async function consultarNcm(){
+    var raw = document.getElementById('ncm-input').value.replace(/\D/g, '');
+    var resultEl = document.getElementById('ncm-result');
+    if (raw.length !== 8){
+      resultEl.innerHTML = '<div class="iss-miss-note">Digite os 8 dígitos do NCM (ex.: 6109.10.00 &rarr; 61091000).</div>';
+      resultEl.classList.add('show');
+      return;
+    }
+    resultEl.innerHTML = '<div class="iss-hint">Consultando&hellip;</div>';
+    resultEl.classList.add('show');
+    try {
+      var resp = await fetch('/.netlify/functions/consulta-ncm?ncm=' + raw);
+      var d = await resp.json();
+      if (d.erro){
+        resultEl.innerHTML = '<div class="iss-miss-note">' + formatarRespostaNcm(d.erro) + '</div>';
+        return;
+      }
+      if (!d.encontrado){
+        resultEl.innerHTML =
+          '<div class="iss-result-head"><span class="iss-result-muni">' + (d.titulo || ('NCM ' + raw)) + '</span></div>' +
+          '<div class="iss-miss-note">' + formatarRespostaNcm(d.mensagem) + '</div>';
+        return;
+      }
+      var badgeCor = d.regimeGeral ? 'baixo' : 'alto';
+      var badgeTxt = d.regimeGeral ? 'REGIME GERAL' : 'BENEFÍCIO / REDUÇÃO';
+      var html =
+        '<div class="iss-result-head"><span class="iss-result-muni">' + d.titulo + '</span>' +
+        '<span class="iss-result-code">cClassTrib ' + d.cclasstrib + ' &middot; CST ' + d.cst + '</span></div>' +
+        '<div><span class="badge-impacto ' + badgeCor + '">' + badgeTxt + '</span></div>' +
+        '<div class="iss-regra-card"><div class="iss-regra-head"><span class="iss-regra-title">Como informar na NF-e</span></div>' +
+        '<div class="iss-regra-row"><span class="k"></span><span class="v">' + formatarRespostaNcm(d.respostaResumo) + '</span></div></div>';
+      if (d.respostaDetalhe){
+        html += '<div class="iss-regra-card"><div class="iss-regra-head"><span class="iss-regra-title">Enquadramento na Reforma</span></div>' +
+          '<div class="iss-regra-row"><span class="k"></span><span class="v">' + formatarRespostaNcm(d.respostaDetalhe) + '</span></div></div>';
+      }
+      html += '<div class="iss-hint">Fonte: ' + d.fonte + ', consultado agora. Se o benefício for condicional, confirme se este produto específico se encaixa na condição exigida.</div>';
+      resultEl.innerHTML = html;
+    } catch (e){
+      resultEl.innerHTML = '<div class="iss-miss-note">Não consegui consultar agora. Tente de novo em instantes.</div>';
+    }
+  }
+
+  document.getElementById('ncm-btnConsultar').addEventListener('click', consultarNcm);
+  document.getElementById('ncm-input').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') consultarNcm();
+  });
 })();
 </script>
 
