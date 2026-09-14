@@ -90,7 +90,7 @@ Se alguma fonte falhar (é normal — sites de governo mudam de endereço de vez
 
 O painel também está publicado em:
 
-**https://melodious-melba-98d754.netlify.app**
+**https://radar-fiscal-contdias.netlify.app**
 
 Esse link é permanente e se atualiza **sozinho** a cada coleta — não precisa fazer nada. Funciona assim: a cada execução do `radar_fiscal_scraper.py`, o script publica automaticamente uma cópia do painel (`index.html`) no repositório GitHub `radar-fiscal-contdias`, e o Netlify está configurado para publicar sozinho a cada envio (push) para esse repositório.
 
