@@ -21,6 +21,9 @@ como fazer isso passo a passo).
 """
 
 import base64
+import csv
+import gzip
+import io
 import json
 import os
 import re
@@ -30,6 +33,7 @@ import subprocess
 import sys
 import traceback
 import xml.etree.ElementTree as ET
+import zipfile
 from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -58,6 +62,8 @@ JSON_DEBUG_PATH = BASE_DIR / "radar_data_ultima_coleta.json"
 HISTORICO_REFORMA_PATH = BASE_DIR / "radar_historico_reforma.json"
 MAX_DIAS_HISTORICO_REFORMA = 90
 LOGO_PATH = BASE_DIR / "logo_contdias.png"
+ISS_ESTADO_PATH = BASE_DIR / "radar_iss_estado.json"
+ISS_PAGINA_URL = "https://www.gov.br/nfse/pt-br/biblioteca/perguntas-e-respostas/aliquotas"
 
 
 def _logo_base64():
@@ -797,6 +803,157 @@ def publicar_no_github():
 
 
 # =========================================================================
+# CONSULTA ISS — atualização automática da base de alíquotas
+# =========================================================================
+# O Portal Nacional da NFS-e (gov.br/nfse) republica periodicamente um ZIP
+# com as alíquotas de ISS vigentes por município, com a data no nome do
+# arquivo (ex.: aliquotas-municipios-20260903-extr1.zip). A cada coleta,
+# checamos se saiu um arquivo novo; se sim, baixamos, reconstruímos a base
+# e substituímos direto na aba "Consulta ISS" do painel — sem passo manual.
+
+PADRAO_ISS_DATA = re.compile(r'(const DATA_B64 = ")[A-Za-z0-9+/=]+(";)')
+PADRAO_ISS_ATUALIZADO = re.compile(r'(const ISS_ATUALIZADO_EM = ")[^"]*(";)')
+
+# Notícia que menciona alteração na LC 116/2003 (a lei que rege o ISS) não
+# é algo que a gente deve reescrever sozinho nas regras jurídicas da
+# Consulta ISS — só avisamos, para alguém do escritório revisar e, se for
+# o caso, me pedir para atualizar o texto das regras manualmente.
+PADRAO_LC116 = re.compile(
+    r"lei complementar\s*n?[ºo°]?\.?\s*116\b|\blc[\s-]?116\b", re.IGNORECASE
+)
+
+
+def detectar_mencoes_lc116(itens):
+    achados = []
+    for i in itens:
+        texto = (i["titulo"] + " " + (i.get("resumo") or ""))
+        if PADRAO_LC116.search(texto):
+            achados.append(i)
+    return achados
+
+
+def _linha_vigente_iss(linhas, data_ref):
+    candidatas = [
+        l for l in linhas
+        if l["dt_ini"][:10] <= data_ref and (not l["dt_fim"] or l["dt_fim"][:10] >= data_ref)
+    ]
+    if not candidatas:
+        return None
+    return max(candidatas, key=lambda l: l["dt_ini"])
+
+
+def _construir_base_iss(arquivo_texto, data_ref):
+    """Lê o TXT consolidado (codigo_ibge;uf;nome_municipio;codigo_servico;
+    incidencia;aliquota;dt_ini;dt_fim) e monta {ibge: {nome, uf, it: {...}}}
+    no mesmo formato que a Consulta ISS já sabe ler."""
+    leitor = csv.DictReader(arquivo_texto, delimiter=";")
+    municipios_info = {}
+    brutos = {}
+    for linha in leitor:
+        ibge = linha["codigo_ibge"]
+        if ibge not in municipios_info:
+            municipios_info[ibge] = {"nome": linha["nome_municipio"], "uf": linha["uf"]}
+        partes = linha["codigo_servico"].split(".")
+        if len(partes) < 3:
+            continue
+        item_sub = partes[0] + partes[1]
+        terceiro = partes[2]
+        chave = (ibge, item_sub, terceiro)
+        brutos.setdefault(chave, []).append(linha)
+
+    por_municipio_item = {}
+    for (ibge, item_sub, terceiro), linhas in brutos.items():
+        vig = _linha_vigente_iss(linhas, data_ref)
+        if vig is None:
+            continue
+        aliquota = (vig["aliquota"] or "").strip()
+        por_municipio_item.setdefault((ibge, item_sub), []).append((terceiro, aliquota))
+
+    resultado = {}
+    for (ibge, item_sub), pares in por_municipio_item.items():
+        valores = set(p[1] for p in pares)
+        valor_final = pares[0][1] if len(valores) == 1 else sorted(
+            [[p[0], p[1]] for p in pares]
+        )
+        if ibge not in resultado:
+            info = municipios_info[ibge]
+            resultado[ibge] = {"nome": info["nome"], "uf": info["uf"], "it": {}}
+        resultado[ibge]["it"][item_sub] = valor_final
+    return resultado
+
+
+def _substituir_dados_iss_no_html(novo_b64, data_exibicao, caminho_html=HTML_PATH):
+    if not caminho_html.exists():
+        return False
+    html = caminho_html.read_text(encoding="utf-8")
+    html, n1 = PADRAO_ISS_DATA.subn(lambda m: m.group(1) + novo_b64 + m.group(2), html, count=1)
+    if n1 == 0:
+        return False
+    html, _ = PADRAO_ISS_ATUALIZADO.subn(lambda m: m.group(1) + data_exibicao + m.group(2), html, count=1)
+    caminho_html.write_text(html, encoding="utf-8")
+    return True
+
+
+def verificar_e_atualizar_base_iss():
+    """
+    Checa se o Portal Nacional da NFS-e publicou uma base de alíquotas mais
+    recente do que a que está no painel. Se sim, baixa, reconstrói e já
+    substitui na Consulta ISS. Retorna (atualizou: bool, mensagem: str).
+    """
+    try:
+        resp = requests.get(ISS_PAGINA_URL, headers=HEADERS_PADRAO, timeout=TIMEOUT)
+        resp.raise_for_status()
+    except Exception as e:
+        return False, f"não consegui checar a página de alíquotas: {e}"
+
+    m = re.search(r'href="(https://www\.gov\.br/nfse/[^"]*aliquotas-municipios-(\d{8})-extr\d+\.zip)"', resp.text)
+    if not m:
+        return False, "não encontrei o link do arquivo de alíquotas na página do gov.br/nfse"
+    zip_url, data_arquivo = m.group(1), m.group(2)
+    nome_arquivo = zip_url.rsplit("/", 1)[-1]
+
+    try:
+        estado = json.loads(ISS_ESTADO_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        estado = {}
+
+    if estado.get("arquivo") == nome_arquivo:
+        return False, "base de ISS sem mudanças desde a última verificação"
+
+    data_ref = f"{data_arquivo[:4]}-{data_arquivo[4:6]}-{data_arquivo[6:8]}"
+    data_exibicao = f"{data_arquivo[6:8]}/{data_arquivo[4:6]}/{data_arquivo[:4]}"
+
+    try:
+        zip_resp = requests.get(zip_url, headers=HEADERS_PADRAO, timeout=90)
+        zip_resp.raise_for_status()
+        with zipfile.ZipFile(io.BytesIO(zip_resp.content)) as zf:
+            txt_nome = next((n for n in zf.namelist() if n.lower().endswith(".txt")), None)
+            if not txt_nome:
+                return False, "o zip baixado não trouxe o arquivo .txt consolidado esperado"
+            with zf.open(txt_nome) as f:
+                texto = io.TextIOWrapper(f, encoding="utf-8-sig")
+                dados = _construir_base_iss(texto, data_ref)
+    except Exception as e:
+        return False, f"falha ao baixar/processar o arquivo de alíquotas: {e}"
+
+    if not dados:
+        return False, "a base baixada veio vazia — não mexi no painel para não estragar nada"
+
+    json_txt = json.dumps(dados, ensure_ascii=False, separators=(",", ":"))
+    novo_b64 = base64.b64encode(gzip.compress(json_txt.encode("utf-8"), compresslevel=9)).decode("ascii")
+
+    if not _substituir_dados_iss_no_html(novo_b64, data_exibicao):
+        return False, "baixei a base nova mas não consegui substituir no HTML (marcador não encontrado)"
+
+    ISS_ESTADO_PATH.write_text(
+        json.dumps({"arquivo": nome_arquivo, "atualizado_em": data_ref, "municipios": len(dados)},
+                   ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return True, f"base de ISS atualizada — {len(dados)} municípios (arquivo {nome_arquivo})"
+
+
+# =========================================================================
 # BOLETIM POR E-MAIL (opcional)
 # =========================================================================
 
@@ -893,7 +1050,25 @@ estão sendo coletadas há alguns dias — provavelmente precisam de ajuste manu
 </td></tr>"""
 
 
-def _monta_html_boletim(itens_curados, total_coletado, restante, data_str, fontes_quebradas=None):
+def _monta_alerta_lc116_html(mencoes_lc116):
+    if not mencoes_lc116:
+        return ""
+    linhas = "".join(
+        f'<div style="padding:3px 0">&bull; <a href="{i["url"]}" style="color:#8A5A12" target="_blank" rel="noopener">{i["titulo"]}</a> ({i["fonte"]})</div>'
+        for i in mencoes_lc116
+    )
+    return f"""
+<tr><td style="padding:14px 22px 0">
+<div style="background:#FCEFD8;border:1px solid #E0A73E;border-radius:8px;padding:12px 16px;font-size:12.5px;color:#5C3D0B">
+<b>&#128220; Fique de olho na Consulta ISS:</b> {len(mencoes_lc116)} notícia(s) de hoje menciona(m) a LC 116/2003 (a lei que
+rege o ISS) — pode ser uma alteração nas regras. As regras jurídicas da aba Consulta ISS não são atualizadas sozinhas
+por segurança; se for o caso, revise e peça para eu atualizar o texto.
+{linhas}
+</div>
+</td></tr>"""
+
+
+def _monta_html_boletim(itens_curados, total_coletado, restante, data_str, fontes_quebradas=None, mencoes_lc116=None):
     n_alto = sum(1 for i in itens_curados if i["impacto"] == "alto")
     n_medio = sum(1 for i in itens_curados if i["impacto"] == "medio")
 
@@ -956,6 +1131,7 @@ def _monta_html_boletim(itens_curados, total_coletado, restante, data_str, fonte
 {pills}
 </td></tr>
 {_monta_alerta_fontes_html(fontes_quebradas)}
+{_monta_alerta_lc116_html(mencoes_lc116)}
 <tr><td style="background:#E0A73E;height:5px;line-height:5px;font-size:0">&nbsp;</td></tr>
 <tr><td style="background:#fff;border:1px solid #E1E5E9;border-top:none;border-radius:0 0 10px 10px;padding:4px 22px 22px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">{"".join(secoes)}</table>
@@ -969,7 +1145,7 @@ Boletim automatico diario &mdash; Fique de olho, Contdias<br>{rodape_extra}
 </body></html>"""
 
 
-def enviar_boletim_email(itens, fontes_quebradas=None):
+def enviar_boletim_email(itens, fontes_quebradas=None, mencoes_lc116=None):
     """
     Envia por e-mail, todo dia, só o que é impacto ALTO ou MÉDIO (a curadoria
     do que realmente importa — veja selecionar_curadoria()). Impacto BAIXO
@@ -981,6 +1157,10 @@ def enviar_boletim_email(itens, fontes_quebradas=None):
     fontes_quebradas: lista opcional (de atualizar_saude_fontes()) de fontes
     que estão falhando há vários dias seguidos — vira um aviso no topo do
     e-mail para alguém dar uma olhada no script.
+
+    mencoes_lc116: lista opcional (de detectar_mencoes_lc116()) de notícias
+    do dia que mencionam a LC 116/2003 — vira um aviso para revisão manual
+    das regras da Consulta ISS.
     """
     host = os.environ.get("RADAR_SMTP_HOST")
     porta = os.environ.get("RADAR_SMTP_PORT")
@@ -998,7 +1178,7 @@ def enviar_boletim_email(itens, fontes_quebradas=None):
 
     curados, restante = selecionar_curadoria(itens)
     data_str = datetime.now(TZ_BR).strftime("%d/%m/%Y")
-    html = _monta_html_boletim(curados, len(itens), restante, data_str, fontes_quebradas)
+    html = _monta_html_boletim(curados, len(itens), restante, data_str, fontes_quebradas, mencoes_lc116)
 
     linhas_txt = [
         f"Fique de olho ⚠ — Boletim de {data_str}",
@@ -1055,13 +1235,24 @@ def main():
         for f in fontes_quebradas:
             print(f"  - {f['fonte']}: {f['dias']} dia(s) — {f['motivo']}")
 
+    mencoes_lc116 = detectar_mencoes_lc116(itens)
+    if mencoes_lc116:
+        print(f"\n[lc116] {len(mencoes_lc116)} notícia(s) de hoje menciona(m) a LC 116/2003 — revisão manual recomendada.")
+
     ok = atualizar_html(itens)
+
+    print("\nChecando se a base de alíquotas de ISS mudou...")
+    try:
+        atualizou_iss, msg_iss = verificar_e_atualizar_base_iss()
+        print(f"[iss] {msg_iss}")
+    except Exception as e:
+        print(f"[iss] Erro inesperado ao checar a base de ISS: {e}")
 
     if ok and publicar_online:
         publicar_no_github()
 
     if enviar_email:
-        enviar_boletim_email(itens, fontes_quebradas)
+        enviar_boletim_email(itens, fontes_quebradas, mencoes_lc116)
 
     if ok:
         print("\nConcluído. Abra o radar_fiscal_contdias.html no navegador para ver o resultado.")
