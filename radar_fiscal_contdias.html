@@ -1404,6 +1404,19 @@
       } else if (d.oficialErro){
         html += '<div class="iss-hint">&#9888; Não consegui cruzar com a Receita Federal agora: ' + formatarRespostaNcm(d.oficialErro) + '</div>';
       }
+      if (d.opcoesCclasstrib && d.opcoesCclasstrib.length){
+        var linhasOpcoes = d.opcoesCclasstrib.map(function(op){
+          return '<tr><td class="code">' + op.codigo + '</td><td>' + formatarRespostaNcm(op.descricao) +
+            '</td><td style="white-space:nowrap">' + (op.tratamento.indexOf('Sem Cálculo') !== -1 ? 'Sem cálculo' : 'Com cálculo') + '</td></tr>';
+        }).join('');
+        html += '<div class="iss-regra-card">' +
+          '<div class="iss-regra-head"><span class="iss-regra-title">Códigos possíveis (Imposto Seletivo)</span>' +
+          '<span class="iss-regra-scope">escolha conforme o tipo de operação</span></div>' +
+          '<div style="overflow-x:auto"><table class="iss-breakdown"><thead><tr><th>Código</th><th>Tipo de operação</th><th>Cálculo</th></tr></thead><tbody>' +
+          linhasOpcoes + '</tbody></table></div>' +
+          '<div class="iss-regra-caveat">Lista oficial da Receita Federal para operações com Imposto Seletivo — não é específica deste NCM, é a mesma para qualquer produto/serviço tributado pelo IS. Escolha o código pela natureza real desta operação (venda direta, exportação, devolução, doação, consumo próprio etc.).</div>' +
+          '</div>';
+      }
       html += '<div class="iss-hint">Fonte do cClassTrib/CST: ' + d.fonte + ' (agregador, não oficial), consultado agora. Se o benefício for condicional, confirme se este produto específico se encaixa na condição exigida.</div>';
       resultEl.innerHTML = html;
     } catch (e){

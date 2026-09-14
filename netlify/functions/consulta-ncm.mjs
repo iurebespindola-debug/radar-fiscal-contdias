@@ -52,6 +52,15 @@ export default async (req) => {
     });
   }
 
+  // Quando não há um cClassTrib único E o produto é tributado pelo Imposto
+  // Seletivo (confirmado pela Receita), busca o catálogo oficial de códigos
+  // válidos para operações com IS — a variação nesse caso é pelo TIPO DE
+  // OPERAÇÃO (venda direta, exportação, devolução, etc.), não pelo NCM.
+  let opcoesCclasstrib = null;
+  if (agregador.semCodigoUnico && oficial.dados?.tributadoPeloImpostoSeletivo) {
+    opcoesCclasstrib = await consultarOpcoesImpostoSeletivo();
+  }
+
   return json({
     encontrado: true,
     ncm,
@@ -60,6 +69,7 @@ export default async (req) => {
     cst: agregador.cst,
     regimeGeral: agregador.regimeGeral,
     semCodigoUnico: agregador.semCodigoUnico,
+    opcoesCclasstrib,
     respostaResumo: agregador.respostaCst,
     respostaDetalhe: agregador.respostaReforma,
     fonte: FONTE_AGREGADOR,
@@ -168,6 +178,28 @@ async function consultarOficial(ncm) {
     };
   } catch (e) {
     return { erro: "Não consegui confirmar com a Receita Federal agora (fonte oficial fora do ar ou indisponível)." };
+  }
+}
+
+// --- Catálogo oficial de cClassTrib do Imposto Seletivo (por tipo de
+// operação — venda direta, exportação, devolução, doação etc.) ------------
+
+async function consultarOpcoesImpostoSeletivo() {
+  const hoje = new Date().toISOString().slice(0, 10);
+  try {
+    const resp = await fetch(
+      `https://piloto-cbs.tributos.gov.br/servico/calculadora-consumo/api/calculadora/dados-abertos/classificacoes-tributarias/imposto-seletivo?data=${hoje}`,
+      { headers: { "User-Agent": "Mozilla/5.0 (compatible; FiqueDeOlhoContdias/1.0)" } }
+    );
+    if (!resp.ok) return null;
+    const lista = await resp.json();
+    return lista.map((i) => ({
+      codigo: i.codigo,
+      descricao: i.descricao,
+      tratamento: i.descricaoTratamentoTributario,
+    }));
+  } catch (e) {
+    return null;
   }
 }
 
