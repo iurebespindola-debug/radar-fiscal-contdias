@@ -322,6 +322,12 @@ PALAVRAS_BAIXO_IMPACTO = [
 # COLETA — RSS/XML
 # =========================================================================
 
+# Preenchida a cada coleta com (nome_fonte, sucesso, motivo_erro) — usada
+# para detectar fontes quebradas há vários dias seguidos (ver
+# atualizar_saude_fontes mais abaixo).
+_RESULTADOS_FONTES = []
+
+
 def _tag_local(tag):
     """Remove o namespace de uma tag do ElementTree, ex: '{ns}item' -> 'item'."""
     return tag.split("}")[-1] if "}" in tag else tag
@@ -420,9 +426,11 @@ def coletar_fonte_rss(fonte, limite):
         for it in itens:
             resultado.append(monta_item(it["titulo"], it["resumo"], fonte["esfera"], fonte["nome"], it["url"], it["data"]))
         print(f"  [ok] {fonte['nome']}: {len(resultado)} item(ns)")
+        _RESULTADOS_FONTES.append((fonte["nome"], True, ""))
         return resultado
     except Exception as e:
         print(f"  [falhou] {fonte['nome']}: {e}")
+        _RESULTADOS_FONTES.append((fonte["nome"], False, str(e)))
         return []
 
 
@@ -463,9 +471,11 @@ def coletar_fonte_html(fonte, limite, esfera=None, estado=None):
             if len(resultado) >= limite:
                 break
         print(f"  [ok] {fonte['nome']}: {len(resultado)} item(ns) (leitura genérica)")
+        _RESULTADOS_FONTES.append((fonte["nome"] if not estado else f"SEFAZ-{estado}", True, ""))
         return resultado
     except Exception as e:
         print(f"  [falhou] {fonte['nome']}: {e}")
+        _RESULTADOS_FONTES.append((fonte["nome"] if not estado else f"SEFAZ-{estado}", False, str(e)))
         return []
 
 
@@ -518,6 +528,7 @@ def monta_item(titulo, resumo, esfera, fonte, url, data):
 
 def coleta_completa():
     todos_itens = []
+    _RESULTADOS_FONTES.clear()
 
     print("Coletando fontes federais (RSS)...")
     for fonte in FONTES_RSS_FEDERAIS:
@@ -552,6 +563,59 @@ def coleta_completa():
     print(f"Filtro de relevância tributária: {antes} -> {len(itens_unicos)} notícia(s).")
 
     return itens_unicos
+
+
+# =========================================================================
+# SAÚDE DAS FONTES — detecta fonte quebrada há vários dias seguidos
+# =========================================================================
+# Uma fonte falhar uma vez é normal (instabilidade momentânea do site).
+# O que interessa avisar é quando ela para de funcionar por vários dias
+# seguidos — sinal de que o endereço mudou de verdade e precisa de ajuste
+# manual. Guardamos o histórico num arquivo simples e só alertamos a
+# partir de LIMIAR_ALERTA_SAUDE falhas consecutivas.
+SAUDE_FONTES_PATH = BASE_DIR / "radar_saude_fontes.json"
+LIMIAR_ALERTA_SAUDE = 3
+
+
+def atualizar_saude_fontes():
+    """
+    Usa o que foi registrado em _RESULTADOS_FONTES durante a coleta para
+    atualizar o histórico de saúde de cada fonte, e devolve a lista das
+    que estão quebradas há LIMIAR_ALERTA_SAUDE dias ou mais.
+    """
+    try:
+        estado = json.loads(SAUDE_FONTES_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        estado = {}
+
+    hoje = datetime.now(TZ_BR).strftime("%Y-%m-%d")
+    # Se uma fonte aparecer mais de uma vez na mesma coleta (não deveria,
+    # mas por segurança), considera sucesso se pelo menos uma tentativa deu certo.
+    por_fonte = {}
+    for nome, sucesso, motivo in _RESULTADOS_FONTES:
+        if nome not in por_fonte or sucesso:
+            por_fonte[nome] = (sucesso, motivo)
+
+    for nome, (sucesso, motivo) in por_fonte.items():
+        registro = estado.get(nome, {"falhas_seguidas": 0})
+        if sucesso:
+            registro["falhas_seguidas"] = 0
+            registro.pop("motivo", None)
+        else:
+            registro["falhas_seguidas"] = registro.get("falhas_seguidas", 0) + 1
+            registro["motivo"] = motivo
+        registro["ultima_atualizacao"] = hoje
+        estado[nome] = registro
+
+    SAUDE_FONTES_PATH.write_text(json.dumps(estado, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    quebradas = [
+        {"fonte": nome, "dias": r["falhas_seguidas"], "motivo": r.get("motivo", "")}
+        for nome, r in estado.items()
+        if r.get("falhas_seguidas", 0) >= LIMIAR_ALERTA_SAUDE
+    ]
+    quebradas.sort(key=lambda x: -x["dias"])
+    return quebradas
 
 
 def placar_reforma_tributaria():
@@ -812,7 +876,24 @@ text-decoration:none;padding:7px 14px;border-radius:7px">Ler noticia completa &r
 </table>"""
 
 
-def _monta_html_boletim(itens_curados, total_coletado, restante, data_str):
+def _monta_alerta_fontes_html(fontes_quebradas):
+    if not fontes_quebradas:
+        return ""
+    linhas = "".join(
+        f'<div style="padding:3px 0">&bull; <b>{f["fonte"]}</b> — sem coletar há {f["dias"]} dia(s)</div>'
+        for f in fontes_quebradas
+    )
+    return f"""
+<tr><td style="padding:14px 22px 0">
+<div style="background:#FBEAE9;border:1px solid #F3C6C3;border-radius:8px;padding:12px 16px;font-size:12.5px;color:#8A2A22">
+<b>&#9888; Atenção técnica:</b> {len(fontes_quebradas)} fonte(s) parecem ter mudado de endereço ou estrutura e não
+estão sendo coletadas há alguns dias — provavelmente precisam de ajuste manual no script.
+{linhas}
+</div>
+</td></tr>"""
+
+
+def _monta_html_boletim(itens_curados, total_coletado, restante, data_str, fontes_quebradas=None):
     n_alto = sum(1 for i in itens_curados if i["impacto"] == "alto")
     n_medio = sum(1 for i in itens_curados if i["impacto"] == "medio")
 
@@ -874,6 +955,7 @@ def _monta_html_boletim(itens_curados, total_coletado, restante, data_str):
 <div style="color:#CFE3D7;font-size:12.5px;margin-top:4px">Contdias Contabilidade &middot; Departamento Fiscal &middot; {data_str}</div>
 {pills}
 </td></tr>
+{_monta_alerta_fontes_html(fontes_quebradas)}
 <tr><td style="background:#E0A73E;height:5px;line-height:5px;font-size:0">&nbsp;</td></tr>
 <tr><td style="background:#fff;border:1px solid #E1E5E9;border-top:none;border-radius:0 0 10px 10px;padding:4px 22px 22px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">{"".join(secoes)}</table>
@@ -887,7 +969,7 @@ Boletim automatico diario &mdash; Fique de olho, Contdias<br>{rodape_extra}
 </body></html>"""
 
 
-def enviar_boletim_email(itens):
+def enviar_boletim_email(itens, fontes_quebradas=None):
     """
     Envia por e-mail, todo dia, só o que é impacto ALTO ou MÉDIO (a curadoria
     do que realmente importa — veja selecionar_curadoria()). Impacto BAIXO
@@ -895,6 +977,10 @@ def enviar_boletim_email(itens):
     as variáveis de ambiente abaixo estiverem configuradas (veja o README):
       RADAR_SMTP_HOST, RADAR_SMTP_PORT, RADAR_SMTP_USER, RADAR_SMTP_SENHA,
       RADAR_EMAIL_DESTINO
+
+    fontes_quebradas: lista opcional (de atualizar_saude_fontes()) de fontes
+    que estão falhando há vários dias seguidos — vira um aviso no topo do
+    e-mail para alguém dar uma olhada no script.
     """
     host = os.environ.get("RADAR_SMTP_HOST")
     porta = os.environ.get("RADAR_SMTP_PORT")
@@ -912,7 +998,7 @@ def enviar_boletim_email(itens):
 
     curados, restante = selecionar_curadoria(itens)
     data_str = datetime.now(TZ_BR).strftime("%d/%m/%Y")
-    html = _monta_html_boletim(curados, len(itens), restante, data_str)
+    html = _monta_html_boletim(curados, len(itens), restante, data_str, fontes_quebradas)
 
     linhas_txt = [
         f"Fique de olho ⚠ — Boletim de {data_str}",
@@ -963,13 +1049,19 @@ def main():
 
     print(f"\nTotal de notícias únicas coletadas: {len(itens)}")
 
+    fontes_quebradas = atualizar_saude_fontes()
+    if fontes_quebradas:
+        print(f"\n[saude] {len(fontes_quebradas)} fonte(s) falhando há {LIMIAR_ALERTA_SAUDE}+ dias seguidos:")
+        for f in fontes_quebradas:
+            print(f"  - {f['fonte']}: {f['dias']} dia(s) — {f['motivo']}")
+
     ok = atualizar_html(itens)
 
     if ok and publicar_online:
         publicar_no_github()
 
     if enviar_email:
-        enviar_boletim_email(itens)
+        enviar_boletim_email(itens, fontes_quebradas)
 
     if ok:
         print("\nConcluído. Abra o radar_fiscal_contdias.html no navegador para ver o resultado.")
