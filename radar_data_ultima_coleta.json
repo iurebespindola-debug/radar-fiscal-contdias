@@ -1,0 +1,246 @@
+{
+  "gerado_em": "2026-09-14T12:03:43-03:00",
+  "exemplo": false,
+  "reforma_tributaria": [
+    {
+      "nome": "IBS",
+      "fase": "Regulamentação infralegal",
+      "progresso": 42,
+      "nota": "Leis complementares publicadas; decretos e portarias em elaboração."
+    },
+    {
+      "nome": "CBS",
+      "fase": "Regulamentação infralegal",
+      "progresso": 45,
+      "nota": "Comitê gestor em fase de testes; alíquotas por setor em definição."
+    },
+    {
+      "nome": "Imposto Seletivo",
+      "fase": "Definição de incidência",
+      "progresso": 30,
+      "nota": "Lista de produtos/serviços sujeitos ainda em debate."
+    }
+  ],
+  "historico_reforma": [
+    {
+      "data": "2026-09-14",
+      "placar": [
+        {
+          "nome": "IBS",
+          "progresso": 42
+        },
+        {
+          "nome": "CBS",
+          "progresso": 45
+        },
+        {
+          "nome": "Imposto Seletivo",
+          "progresso": 30
+        }
+      ],
+      "simples_nacional": [
+        {
+          "titulo": "CFC apresenta 19 pontos de aprimoramento na regulamentação do Simples Nacional",
+          "url": "https://cfc.org.br/noticias/cfc-apresenta-19-pontos-de-aprimoramento-na-regulamentacao-do-simples-nacional/",
+          "fonte": "Conselho Federal de Contabilidade (CFC)",
+          "impacto": "medio"
+        },
+        {
+          "titulo": "Simples Nacional: 26 municípios assumem cobrança de débitos em outubro",
+          "url": "https://www.contabeis.com.br/noticias/79384/simples-nacional-26-municipios-assumem-cobranca-de-debitos-em-outubro/",
+          "fonte": "Portal Contábeis",
+          "impacto": "medio"
+        },
+        {
+          "titulo": "CFC apresenta 19 pontos para aprimorar o Simples Nacional",
+          "url": "https://www.contabeis.com.br/noticias/79385/cfc-apresenta-19-pontos-para-aprimorar-o-simples-nacional/",
+          "fonte": "Portal Contábeis",
+          "impacto": "medio"
+        },
+        {
+          "titulo": "Simples Nacional Híbrido: Vale a Pena Optar em 2027?",
+          "url": "https://jornalcontabil.com.br/noticia/simples-nacional-hibrido-vale-a-pena/",
+          "fonte": "Jornal Contábil",
+          "impacto": "medio"
+        }
+      ],
+      "demais_mudancas": [
+        {
+          "titulo": "Reforma tributária: loteamento e parcelamento do solo",
+          "url": "https://www.contabeis.com.br/noticias/79394/reforma-tributaria-loteamento-e-parcelamento-do-solo/",
+          "fonte": "Portal Contábeis",
+          "impacto": "medio"
+        },
+        {
+          "titulo": "IBS: Comitê busca parceiros para devolver créditos",
+          "url": "https://www.contabeis.com.br/noticias/79386/ibs-comite-busca-parceiros-para-devolver-creditos/",
+          "fonte": "Portal Contábeis",
+          "impacto": "medio"
+        },
+        {
+          "titulo": "CBS 2027: TCU receberá ainda hoje (14) proposta para calcular alíquota",
+          "url": "https://www.contabeis.com.br/noticias/79383/cbs-2027-tcu-recebera-ainda-hoje-14-proposta-para-calcular-aliquota/",
+          "fonte": "Portal Contábeis",
+          "impacto": "medio"
+        },
+        {
+          "titulo": "Reforma Tributária em 2027: a empresa que ainda está discutindo alíquota está olhando para o problema errado",
+          "url": "https://jornalcontabil.com.br/noticia/reforma-tributaria-em-2027-a-empresa-que-ainda-esta-discutindo-aliquota-esta-olhando-para-o-problema-errado/",
+          "fonte": "Jornal Contábil",
+          "impacto": "medio"
+        }
+      ]
+    }
+  ],
+  "itens": [
+    {
+      "id": "cfc-apresenta-19-pontos-de-aprimoramento-na-regulamenta-o-do-nacional",
+      "titulo": "CFC apresenta 19 pontos de aprimoramento na regulamentação do Simples Nacional",
+      "resumo": "O Conselho Federal de Contabilidade (CFC) apresentou 19 pontos de aprimoramento na regulamentação do Simples Nacional durante reunião dia 9 de setembro, com representantes da Secretaria Especial da Receita Federal do Brasil (RFB) e do Comitê Gestor do Simples Nacional (CGSN). O c",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-11",
+      "fonte": "Conselho Federal de Contabilidade (CFC)",
+      "url": "https://cfc.org.br/noticias/cfc-apresenta-19-pontos-de-aprimoramento-na-regulamentacao-do-simples-nacional/",
+      "tags": [
+        "Simples Nacional"
+      ]
+    },
+    {
+      "id": "obriga-es-tribut-rias-que-vencem-nesta-ter-a-15--aterca15",
+      "titulo": "Obrigações tributárias que vencem nesta terça (15)",
+      "resumo": "EFD-Contribuições e EFD-Reinf estão entre as obrigações tributárias com prazo de entrega nesta terça-feira, 15 de setembro. Leia mais em https://www.contabeis.com.br/noticias/79387/obrigacoes-tributarias-que-vencem-nesta-terca-15/",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-14",
+      "fonte": "Portal Contábeis",
+      "url": "https://www.contabeis.com.br/noticias/79387/obrigacoes-tributarias-que-vencem-nesta-terca-15/",
+      "tags": [
+        "prazo"
+      ]
+    },
+    {
+      "id": "simples-nacional-26-munic-pios-assumem-cobran-a-de-d-bitos-e-moutubro",
+      "titulo": "Simples Nacional: 26 municípios assumem cobrança de débitos em outubro",
+      "resumo": "Convênios permitem que 26 municípios inscrevam e cobrem débitos de ISS do Simples Nacional a partir de 1º de outubro de 2026. Leia mais em https://www.contabeis.com.br/noticias/79384/simples-nacional-26-municipios-assumem-cobranca-de-debitos-em-outubro/",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-14",
+      "fonte": "Portal Contábeis",
+      "url": "https://www.contabeis.com.br/noticias/79384/simples-nacional-26-municipios-assumem-cobranca-de-debitos-em-outubro/",
+      "tags": [
+        "ISS",
+        "Simples Nacional"
+      ]
+    },
+    {
+      "id": "reforma-tribut-ria-loteamento-e-parcelamento-do-solo-todosolo",
+      "titulo": "Reforma tributária: loteamento e parcelamento do solo",
+      "resumo": "Entenda os impactos da Reforma Tributária em loteamento e parcelamento do solo. Descubra como as novas regras de IBS e CBS afetam o setor imobiliário e contábil. Leia mais em https://www.contabeis.com.br/noticias/79394/reforma-tributaria-loteamento-e-parcelamento-do-solo/",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-14",
+      "fonte": "Portal Contábeis",
+      "url": "https://www.contabeis.com.br/noticias/79394/reforma-tributaria-loteamento-e-parcelamento-do-solo/",
+      "tags": [
+        "IBS",
+        "CBS",
+        "Reforma Tributária",
+        "Parcelamento"
+      ]
+    },
+    {
+      "id": "ibs-comit-busca-parceiros-para-devolver-cr-ditos-creditos",
+      "titulo": "IBS: Comitê busca parceiros para devolver créditos",
+      "resumo": "Comitê Gestor do IBS abriu chamamento para desenvolver sistema que permitirá às empresas solicitar o ressarcimento de saldos credores do novo imposto. Leia mais em https://www.contabeis.com.br/noticias/79386/ibs-comite-busca-parceiros-para-devolver-creditos/",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-14",
+      "fonte": "Portal Contábeis",
+      "url": "https://www.contabeis.com.br/noticias/79386/ibs-comite-busca-parceiros-para-devolver-creditos/",
+      "tags": [
+        "IBS"
+      ]
+    },
+    {
+      "id": "cfc-apresenta-19-pontos-para-aprimorar-o-simples-nacional-nacional",
+      "titulo": "CFC apresenta 19 pontos para aprimorar o Simples Nacional",
+      "resumo": "CFC apresenta 19 pontos para aprimorar a regulamentação do Simples Nacional durante a transição para IBS e CBS . Leia mais em https://www.contabeis.com.br/noticias/79385/cfc-apresenta-19-pontos-para-aprimorar-o-simples-nacional/",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-14",
+      "fonte": "Portal Contábeis",
+      "url": "https://www.contabeis.com.br/noticias/79385/cfc-apresenta-19-pontos-para-aprimorar-o-simples-nacional/",
+      "tags": [
+        "IBS",
+        "CBS",
+        "Simples Nacional"
+      ]
+    },
+    {
+      "id": "cbs-2027-tcu-receber-ainda-hoje-14-proposta-para-calcular-al-aliquota",
+      "titulo": "CBS 2027: TCU receberá ainda hoje (14) proposta para calcular alíquota",
+      "resumo": "Receita Federal envia ao TCU modelo para calcular a alíquota da CBS , que substituirá PIS , Cofins e IOF-Seguros a partir de 2027. Leia mais em https://www.contabeis.com.br/noticias/79383/cbs-2027-tcu-recebera-ainda-hoje-14-proposta-para-calcular-aliquota/",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-14",
+      "fonte": "Portal Contábeis",
+      "url": "https://www.contabeis.com.br/noticias/79383/cbs-2027-tcu-recebera-ainda-hoje-14-proposta-para-calcular-aliquota/",
+      "tags": [
+        "CBS",
+        "Alíquota"
+      ]
+    },
+    {
+      "id": "reforma-tribut-ria-em-2027-a-empresa-que-ainda-est-discutind-maerrado",
+      "titulo": "Reforma Tributária em 2027: a empresa que ainda está discutindo alíquota está olhando para o problema errado",
+      "resumo": "A proximidade de 2027 muda bastante a conversa sobre a Reforma Tributária. Durante boa parte dos últimos anos, o esforço das empresas ficou concentrado em entender IBS, CBS, estimativas de alíquota, créditos e possíveis impactos financeiros. Agora, essa discussão precisa chegar a",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-14",
+      "fonte": "Jornal Contábil",
+      "url": "https://jornalcontabil.com.br/noticia/reforma-tributaria-em-2027-a-empresa-que-ainda-esta-discutindo-aliquota-esta-olhando-para-o-problema-errado/",
+      "tags": [
+        "IBS",
+        "CBS",
+        "Reforma Tributária",
+        "Alíquota"
+      ]
+    },
+    {
+      "id": "efd-contribui-es-e-reinf-vencem-nesta-ter-a-15-e-atraso-gera-eramulta",
+      "titulo": "EFD-Contribuições e Reinf vencem nesta terça (15) e atraso gera multa",
+      "resumo": "Escritórios de contabilidade e empresas precisam reforçar a organização e o alinhamento de informações O post EFD-Contribuições e Reinf vencem nesta terça (15) e atraso gera multa apareceu primeiro em Jornal Contábil - Independência e compromisso .",
+      "esfera": "Federal",
+      "impacto": "alto",
+      "data": "2026-09-14",
+      "fonte": "Jornal Contábil",
+      "url": "https://jornalcontabil.com.br/noticia/efd-contribuicoes-e-reinf-vencem-nesta-terca-15-e-atraso-gera-multa/",
+      "tags": []
+    },
+    {
+      "id": "definidas-as-regras-do-imposto-de-renda-na-venda-de-bens-por-orcasais",
+      "titulo": "Definidas as regras do Imposto de Renda na venda de bens por casais",
+      "resumo": "Entendimento unifica cálculo do lucro e divide o imposto em partes iguais entre o casal O post Definidas as regras do Imposto de Renda na venda de bens por casais apareceu primeiro em Jornal Contábil - Independência e compromisso .",
+      "esfera": "Federal",
+      "impacto": "baixo",
+      "data": "2026-09-14",
+      "fonte": "Jornal Contábil",
+      "url": "https://jornalcontabil.com.br/noticia/definidas-as-regras-do-imposto-de-renda-na-venda-de-bens-por-casais/",
+      "tags": []
+    },
+    {
+      "id": "simples-nacional-h-brido-vale-a-pena-optar-em-2027--aleapena",
+      "titulo": "Simples Nacional Híbrido: Vale a Pena Optar em 2027?",
+      "resumo": "Imagine duas empresas quase idênticas, vendendo o mesmo serviço pelo mesmo preço. Uma delas escolheu o Simples Nacional híbrido. A outra manteve tudo dentro do regime unificado tradicional. Para o cliente que compra dessas duas empresas, essa diferença pode significar economia re",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-12",
+      "fonte": "Jornal Contábil",
+      "url": "https://jornalcontabil.com.br/noticia/simples-nacional-hibrido-vale-a-pena/",
+      "tags": [
+        "Simples Nacional"
+      ]
+    }
+  ]
+}
