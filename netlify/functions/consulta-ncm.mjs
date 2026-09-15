@@ -72,6 +72,10 @@ export default async (req) => {
     opcoesCclasstrib,
     respostaResumo: agregador.respostaCst,
     respostaDetalhe: agregador.respostaReforma,
+    respostaIpi: agregador.respostaIpi,
+    respostaImportacao: agregador.respostaImportacao,
+    respostaIcmsSt: agregador.respostaIcmsSt,
+    respostaMva: agregador.respostaMva,
     fonte: FONTE_AGREGADOR,
     oficial: oficial.dados || null,
     oficialErro: oficial.erro || null,
@@ -103,6 +107,10 @@ async function consultarAgregador(ncm) {
 
   let respostaCst = null;
   let respostaReforma = null;
+  let respostaIpi = null;
+  let respostaImportacao = null;
+  let respostaIcmsSt = null;
+  let respostaMva = null;
   const blocos = html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g);
   for (const m of blocos) {
     let dados;
@@ -118,6 +126,14 @@ async function consultarAgregador(ncm) {
         if (nome.startsWith("Como fica") && nome.includes("Reforma Tribut")) {
           respostaReforma = q.acceptedAnswer?.text || null;
         }
+        // Mesma consulta já traz outros tributos do produto (IPI, II,
+        // ICMS-ST/CEST, MVA) — aproveitamos em vez de fazer nova chamada.
+        if (nome.startsWith("Qual a alíquota IPI")) respostaIpi = q.acceptedAnswer?.text || null;
+        if (nome.includes("Imposto de Importação (II)")) respostaImportacao = q.acceptedAnswer?.text || null;
+        if (nome.includes("Substituição Tributária do ICMS") && !nome.includes("MVA")) {
+          respostaIcmsSt = q.acceptedAnswer?.text || null;
+        }
+        if (nome.includes("MVA") && nome.includes("meu estado")) respostaMva = q.acceptedAnswer?.text || null;
       }
     }
   }
@@ -144,6 +160,10 @@ async function consultarAgregador(ncm) {
     titulo,
     respostaCst,
     respostaReforma,
+    respostaIpi,
+    respostaImportacao,
+    respostaIcmsSt,
+    respostaMva,
     cclasstrib,
     cst,
     regimeGeral,

@@ -1958,6 +1958,14 @@
         html += '<div class="iss-regra-card"><div class="iss-regra-head"><span class="iss-regra-title">Enquadramento na Reforma</span></div>' +
           '<div class="iss-regra-row"><span class="k"></span><span class="v">' + formatarRespostaNcm(d.respostaDetalhe) + '</span></div></div>';
       }
+      if (d.respostaIpi || d.respostaImportacao || d.respostaIcmsSt || d.respostaMva){
+        html += '<div class="iss-regra-card"><div class="iss-regra-head"><span class="iss-regra-title">Outros tributos deste produto</span></div>';
+        if (d.respostaIpi) html += '<div class="iss-regra-row"><span class="k">IPI</span><span class="v">' + formatarRespostaNcm(d.respostaIpi) + '</span></div>';
+        if (d.respostaImportacao) html += '<div class="iss-regra-row"><span class="k">II (Importação)</span><span class="v">' + formatarRespostaNcm(d.respostaImportacao) + '</span></div>';
+        if (d.respostaIcmsSt) html += '<div class="iss-regra-row"><span class="k">ICMS-ST</span><span class="v">' + formatarRespostaNcm(d.respostaIcmsSt) + '</span></div>';
+        if (d.respostaMva) html += '<div class="iss-regra-row"><span class="k">MVA por estado</span><span class="v">' + formatarRespostaNcm(d.respostaMva) + '</span></div>';
+        html += '</div>';
+      }
       if (d.oficial){
         var of = d.oficial;
         var descOficial = [of.capitulo, of.posicao, of.subitem].filter(Boolean).join(' — ');
