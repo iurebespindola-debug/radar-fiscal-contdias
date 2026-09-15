@@ -1944,6 +1944,43 @@
     return txt.replace(/</g, '&lt;');
   }
 
+  // Alíquota nominal fixada em lei pra 2026 (LC 214/2025) — único ano com
+  // percentual definitivo até o momento; 2027 em diante ainda depende de
+  // regulamentação futura, por isso não projetamos esses anos aqui.
+  var ALIQUOTA_NOMINAL_2026 = { ibs: 0.1, cbs: 0.9 };
+
+  // Extrai a redução do "badge" que já mostramos na Consulta cClassTrib
+  // (ex.: "red. 60%", "red. 60% IBS · 100% CBS"). Devolve null quando o
+  // badge não é uma redução percentual simples (ex.: "crédito presumido",
+  // "encerrado") — nesses casos não dá pra calcular uma alíquota efetiva
+  // com essa continha simples.
+  function extrairReducao(badge){
+    if (!badge) return { ibs: 0, cbs: 0 };
+    var partido = badge.match(/(\d+(?:,\d+)?)\s*%\s*IBS\s*·\s*(\d+(?:,\d+)?)\s*%\s*CBS/i);
+    if (partido) return { ibs: parseFloat(partido[1].replace(',', '.')), cbs: parseFloat(partido[2].replace(',', '.')) };
+    var unico = badge.match(/red\.?\s*(\d+(?:,\d+)?)\s*%/i);
+    if (unico){ var v = parseFloat(unico[1].replace(',', '.')); return { ibs: v, cbs: v }; }
+    return null;
+  }
+
+  function calcularAliquotaEfetiva2026(cclasstribCodigo){
+    if (!cclasstribCodigo || !window.__cctPorCodigo) return null;
+    var item = window.__cctPorCodigo[cclasstribCodigo];
+    if (!item) return null;
+    var reducao = extrairReducao(item.badge);
+    if (!reducao) return null;
+    return {
+      reducaoIbs: reducao.ibs,
+      reducaoCbs: reducao.cbs,
+      ibs: Math.round(ALIQUOTA_NOMINAL_2026.ibs * (1 - reducao.ibs / 100) * 10000) / 10000,
+      cbs: Math.round(ALIQUOTA_NOMINAL_2026.cbs * (1 - reducao.cbs / 100) * 10000) / 10000,
+    };
+  }
+
+  function formatarPct(n){
+    return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+  }
+
   async function consultarNcm(){
     var raw = document.getElementById('ncm-input').value.replace(/\D/g, '');
     var resultEl = document.getElementById('ncm-result');
@@ -1990,6 +2027,25 @@
       if (d.respostaDetalhe){
         html += '<div class="iss-regra-card"><div class="iss-regra-head"><span class="iss-regra-title">Enquadramento na Reforma</span></div>' +
           '<div class="iss-regra-row"><span class="k"></span><span class="v">' + formatarRespostaNcm(d.respostaDetalhe) + '</span></div></div>';
+      }
+      if (d.cclasstrib){
+        var efetiva = calcularAliquotaEfetiva2026(d.cclasstrib);
+        if (efetiva){
+          var notaReducao = '';
+          if (efetiva.reducaoIbs || efetiva.reducaoCbs){
+            notaReducao = efetiva.reducaoIbs === efetiva.reducaoCbs
+              ? ' com redução de ' + formatarPct(efetiva.reducaoIbs) + '%'
+              : ' com redução de ' + formatarPct(efetiva.reducaoIbs) + '% no IBS e ' + formatarPct(efetiva.reducaoCbs) + '% na CBS';
+          }
+          html += '<div class="iss-regra-card" style="border-left-color:var(--ambar-600)">' +
+            '<div class="iss-regra-head"><span class="iss-regra-title">📊 Alíquota efetiva em 2026</span>' +
+            '<span class="iss-regra-scope">único ano já fixado em lei</span></div>' +
+            '<div class="iss-regra-row"><span class="k">IBS</span><span class="v">' + formatarPct(efetiva.ibs) + '%</span></div>' +
+            '<div class="iss-regra-row"><span class="k">CBS</span><span class="v">' + formatarPct(efetiva.cbs) + '%</span></div>' +
+            '<div class="iss-regra-caveat">Calculado sobre a alíquota nominal de 2026 (IBS 0,1% + CBS 0,9%)' + notaReducao +
+            '. Os anos seguintes (2027 em diante) ainda dependem de regulamentação futura — acompanhe pelo Cronograma da Reforma.</div>' +
+            '</div>';
+        }
       }
       if (d.respostaIpi || d.respostaImportacao || d.respostaIcmsSt || d.respostaMva){
         html += '<div class="iss-regra-card"><div class="iss-regra-head"><span class="iss-regra-title">Outros tributos deste produto</span></div>';
@@ -2078,6 +2134,10 @@
         it._busca = normalizaTexto(it.codigo + ' ' + it.cst + ' ' + it.cst_nome + ' ' + it.descricao + ' ' + (it.badge || ''));
         return it;
       });
+      // Exposto globalmente pra outros scripts da página (Consulta de
+      // produto) reaproveitarem a mesma base sem baixar/decodificar de novo.
+      window.__cctPorCodigo = {};
+      CCT_ITENS.forEach(function(it){ window.__cctPorCodigo[it.codigo] = it; });
       var atEl = document.getElementById('cct-atualizado-em');
       if (atEl) atEl.textContent = CCLASSTRIB_ATUALIZADO_EM || '—';
       renderCct('');
