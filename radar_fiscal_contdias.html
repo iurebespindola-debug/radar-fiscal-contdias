@@ -223,6 +223,170 @@
   .timeline-item a:hover{ color:var(--verde-700); text-decoration:underline; }
   .timeline-item .fonte{ font-size:11.5px; color:var(--cinza-400); white-space:nowrap; }
 
+  /* ==========================================================
+     Central da Reforma Tributária — hub visual próprio (paleta
+     verde/âmbar da marca, escopado em .reforma-hub para não
+     colidir com o resto do painel).
+     ========================================================== */
+  .reforma-hub{
+    max-width:1180px; margin:0 auto; padding:6px 0 8px;
+    display:flex; flex-direction:column; gap:30px;
+  }
+  .rf-header{
+    background:
+      radial-gradient(ellipse 460px 220px at 92% -20%, rgba(224,167,62,.14), transparent 62%),
+      linear-gradient(150deg, var(--verde-900), var(--verde-700) 82%);
+    color:var(--branco); border-radius:16px; padding:26px 28px; position:relative; overflow:hidden;
+    display:flex; flex-direction:column; gap:8px;
+    box-shadow: 0 12px 32px -16px rgba(18,53,36,.45);
+  }
+  .rf-header::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0px, rgba(255,255,255,.035) 1px, transparent 1px, transparent 26px);
+    mask-image: linear-gradient(to bottom, black, transparent 88%);
+  }
+  .rf-eyebrow{
+    position:relative; font-size:11.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
+    color:var(--ambar-500);
+  }
+  .rf-h1{
+    position:relative; margin:0; font-family:"Fraunces", Georgia, serif; font-weight:600;
+    font-size:26px; text-wrap:balance;
+  }
+  .rf-lede{ position:relative; margin:0; max-width:74ch; font-size:14px; line-height:1.6; opacity:.92; }
+
+  .rf-alertas{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+  .rf-alerta{
+    background:var(--branco); border:1px solid var(--cinza-200); border-left:4px solid var(--ambar-500);
+    border-radius:var(--radius); box-shadow:var(--sombra); padding:14px 16px;
+    display:flex; gap:12px; align-items:flex-start;
+  }
+  .rf-alerta.rf-alerta--ok{ border-left-color:var(--verde-600); }
+  .rf-alerta .rf-alerta-icone{ flex:none; width:34px; height:34px; margin-top:1px; }
+  .rf-alerta-corpo{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .rf-alerta-tag{ font-size:10.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--ambar-700); }
+  .rf-alerta.rf-alerta--ok .rf-alerta-tag{ color:var(--verde-700); }
+  .rf-alerta-titulo{ font-size:14.5px; font-weight:700; color:var(--cinza-900); line-height:1.35; }
+  .rf-alerta-nota{ font-size:12.5px; color:var(--cinza-600); line-height:1.45; }
+  .rf-alerta-nota b{ color:var(--cinza-900); font-variant-numeric:tabular-nums; }
+
+  .rf-secao{
+    background:var(--branco); border:1px solid var(--cinza-200); border-radius:14px;
+    box-shadow:var(--sombra); padding:22px 24px;
+  }
+  .rf-secao-cabecalho{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .rf-secao-cabecalho h2{ margin:0; font-size:16.5px; color:var(--verde-800); display:flex; align-items:center; gap:8px; }
+  .rf-secao-nota{ font-size:12px; color:var(--cinza-600); }
+
+  /* -- Trilha do cronograma -- */
+  .rf-trilha{ display:flex; gap:0; overflow-x:auto; padding-bottom:6px; margin:0 -2px; scroll-snap-type:x proximity; }
+  .rf-marco{
+    scroll-snap-align:start; flex:0 0 auto; width:222px; padding:0 14px 0 0; position:relative;
+  }
+  .rf-marco:not(:last-child)::after{
+    content:""; position:absolute; top:17px; left:34px; right:-4px; height:2px; background:var(--cinza-200);
+  }
+  .rf-marco .rf-marco-selo{
+    width:34px; height:34px; border-radius:50%; background:var(--cinza-100); border:2px solid var(--cinza-300);
+    display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--cinza-600);
+    position:relative; z-index:1; margin-bottom:10px;
+  }
+  .rf-marco.rf-marco--passado .rf-marco-selo{ background:var(--verde-100); border-color:var(--verde-500); color:var(--verde-700); }
+  .rf-marco.rf-marco--atual .rf-marco-selo{
+    background:var(--ambar-500); border-color:var(--ambar-700); color:var(--verde-900);
+    box-shadow:0 0 0 5px var(--ambar-100);
+  }
+  .rf-marco-ano{ font-size:12.5px; font-weight:700; color:var(--cinza-900); margin-bottom:2px; }
+  .rf-marco.rf-marco--atual .rf-marco-ano{ color:var(--ambar-700); }
+  .rf-marco-voce{
+    display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:.4px; text-transform:uppercase;
+    color:var(--ambar-700); background:var(--ambar-100); border-radius:999px; padding:1px 7px; margin-bottom:5px;
+  }
+  .rf-marco-titulo{ font-size:13px; font-weight:600; color:var(--cinza-900); line-height:1.35; margin-bottom:4px; }
+  .rf-marco-desc{ font-size:11.5px; color:var(--cinza-600); line-height:1.5; padding-right:10px; }
+
+  /* -- Obrigatoriedade NF-e -- */
+  .rf-obrigacao{ display:flex; flex-direction:column; gap:14px; }
+  .rf-obrigacao-status{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .rf-chip{
+    font-size:11.5px; font-weight:700; padding:5px 12px; border-radius:999px; letter-spacing:.2px;
+  }
+  .rf-chip.rf-chip--ativo{ background:var(--verde-100); color:var(--verde-800); }
+  .rf-chip.rf-chip--suspenso{ background:var(--ambar-100); color:var(--ambar-700); }
+  .rf-obrigacao-linhas{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
+  .rf-obrigacao-linha{ display:flex; gap:10px; align-items:flex-start; }
+  .rf-obrigacao-linha .marca-check{ flex:none; font-size:16px; line-height:1.3; }
+  .rf-obrigacao-linha .txt b{ display:block; font-size:13px; color:var(--cinza-900); margin-bottom:2px; }
+  .rf-obrigacao-linha .txt span{ font-size:12.5px; color:var(--cinza-600); line-height:1.5; }
+
+  /* -- Consulte seu produto (NCM) -- */
+  .rf-produto-layout{ display:grid; grid-template-columns:minmax(260px,320px) 1fr; gap:18px; align-items:start; }
+  @media (max-width:760px){ .rf-produto-layout{ grid-template-columns:1fr; } }
+  .rf-produto-card{
+    background:var(--verde-50); border:1px solid var(--verde-100); border-radius:12px; padding:18px;
+    display:flex; flex-direction:column; gap:12px; position:sticky; top:14px;
+  }
+  @media (max-width:760px){ .rf-produto-card{ position:static; } }
+  .rf-produto-card label{ font-size:12px; font-weight:600; letter-spacing:.02em; color:var(--cinza-600); }
+  .rf-produto-card input[type="text"]{
+    width:100%; padding:11px 12px; border-radius:8px; border:1px solid var(--cinza-300);
+    background:var(--branco); font-size:14.5px; color:var(--cinza-900);
+    font-family:"IBM Plex Mono", monospace; letter-spacing:.02em;
+  }
+  .rf-produto-card input[type="text"]:focus{ border-color:var(--verde-600); outline:2px solid var(--verde-100); }
+  .rf-produto-btn{
+    background:var(--verde-600); color:var(--branco); border:none; padding:11px 14px; border-radius:8px;
+    font-size:13.5px; font-weight:600; cursor:pointer;
+  }
+  .rf-produto-btn:hover{ background:var(--verde-700); }
+  .rf-produto-hint{ font-size:12px; color:var(--cinza-600); }
+  .rf-produto-resultado{
+    background:var(--branco); border:1px solid var(--cinza-200); border-radius:12px; box-shadow:var(--sombra);
+    padding:22px; min-height:120px; display:none; flex-direction:column; gap:16px;
+  }
+  .rf-produto-resultado.show{ display:flex; }
+  .rf-produto-rodape{ font-size:11.5px; color:var(--cinza-600); line-height:1.55; margin-top:4px; }
+
+  /* Resultado da consulta de NCM reaproveita as classes iss-* (mesmo
+     JS de .iss-painel), só que reskinadas na paleta verde/âmbar do hub
+     em vez do teal da Consulta ISS. */
+  .reforma-hub .iss-result-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; border-bottom:1px solid var(--cinza-200); padding-bottom:12px; }
+  .reforma-hub .iss-result-muni{ font-family:"Source Serif 4", serif; font-size:19px; font-weight:600; color:var(--cinza-900); }
+  .reforma-hub .iss-result-code{ font-family:"IBM Plex Mono", monospace; font-size:12.5px; color:var(--cinza-600); }
+  .reforma-hub .iss-miss-note{ font-size:13.5px; line-height:1.55; padding:13px 15px; border-radius:8px; background:var(--ambar-100); border:1px solid var(--ambar-500); color:var(--cinza-900); }
+  .reforma-hub .iss-hint{ font-size:12px; color:var(--cinza-600); }
+  .reforma-hub .iss-regra-card{ padding:15px 17px; border-radius:8px; background:var(--cinza-50); border:1px solid var(--cinza-200); border-left:3px solid var(--verde-600); display:flex; flex-direction:column; gap:9px; }
+  .reforma-hub .iss-regra-head{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .reforma-hub .iss-regra-title{ font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--verde-800); }
+  .reforma-hub .iss-regra-scope{ font-size:11px; color:var(--cinza-600); font-family:"IBM Plex Mono", monospace; }
+  .reforma-hub .iss-regra-row{ display:grid; grid-template-columns:110px 1fr; gap:10px; font-size:13px; line-height:1.5; }
+  .reforma-hub .iss-regra-row .k{ color:var(--cinza-600); font-weight:600; font-size:12px; padding-top:1px; }
+  .reforma-hub .iss-regra-caveat{ font-size:11.5px; color:var(--cinza-600); line-height:1.5; border-top:1px solid var(--cinza-200); padding-top:9px; }
+  .reforma-hub .iss-breakdown{ width:100%; border-collapse:collapse; font-size:13px; }
+  .reforma-hub .iss-breakdown caption{ text-align:left; font-size:12px; color:var(--ambar-700); font-weight:600; margin-bottom:8px; }
+  .reforma-hub .iss-breakdown th, .reforma-hub .iss-breakdown td{ text-align:left; padding:7px 10px; border-bottom:1px solid var(--cinza-200); }
+  .reforma-hub .iss-breakdown th{ color:var(--cinza-600); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+  .reforma-hub .iss-breakdown td.code{ font-family:"IBM Plex Mono", monospace; }
+  .reforma-hub .iss-breakdown td.rate{ font-variant-numeric:tabular-nums; text-align:right; font-weight:600; }
+
+  /* -- Base de cálculo -- */
+  .rf-basecalculo{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+  .rf-bc-coluna{ border-radius:10px; padding:16px; }
+  .rf-bc-coluna.entra{ background:var(--verde-50); border:1px solid var(--verde-100); }
+  .rf-bc-coluna.nao-entra{ background:var(--ambar-100); border:1px solid #EBD8AC; }
+  .rf-bc-coluna h4{ margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.3px; }
+  .rf-bc-coluna.entra h4{ color:var(--verde-700); }
+  .rf-bc-coluna.nao-entra h4{ color:var(--ambar-700); }
+  .rf-bc-coluna ul{ margin:0; padding-left:18px; display:flex; flex-direction:column; gap:7px; }
+  .rf-bc-coluna li{ font-size:13px; color:var(--cinza-700); line-height:1.5; }
+  .rf-bc-nota{ font-size:12px; color:var(--cinza-600); margin-top:14px; line-height:1.55; border-top:1px dashed var(--cinza-200); padding-top:12px; }
+
+  @media (max-width:640px){
+    .rf-header{ padding:20px; }
+    .rf-h1{ font-size:21px; }
+    .rf-secao{ padding:18px 16px; }
+  }
+
   footer{ text-align:center; padding:24px; font-size:11.5px; color:var(--cinza-400); }
 
   /* ---------- Modal Boletim ---------- */
@@ -390,9 +554,8 @@
   </div>
   <nav class="menu" id="menu-principal">
     <button data-filtro="todos" class="ativo">Radar do Dia</button>
-    <button data-filtro="reforma">Reforma Tributária</button>
+    <button data-filtro="reforma">⚖ Reforma Tributária</button>
     <button data-filtro="iss">🧾 Consulta ISS</button>
-    <button data-filtro="ncm">🔍 Consulta NCM</button>
     <button data-esfera="Federal">Federal</button>
     <button data-esfera="Estadual">Estadual</button>
     <button data-esfera="Municipal">Municipal</button>
@@ -443,21 +606,135 @@
   </div>
   <div class="grid-cards" id="grid-cards"></div>
 
-  <div id="reforma-painel" style="display:none">
-    <div class="secao-titulo"><h2>Evolução do placar</h2></div>
-    <div class="evolucao-wrap" id="evolucao-wrap"></div>
+  <div id="reforma-painel" style="display:none" class="reforma-hub">
 
-    <div class="subgrupo-titulo">
-      <h3>Histórico — Simples Nacional</h3>
-      <span class="contagem" id="contagem-simples"></span>
+    <div class="rf-header">
+      <span class="rf-eyebrow">⚖ LC 214/2025 · IBS · CBS · Imposto Seletivo</span>
+      <h1 class="rf-h1">Central da Reforma Tributária</h1>
+      <p class="rf-lede">Tudo o que muda com a Reforma num só lugar: em que fase estamos agora, o cronograma completo até 2033, o que já é obrigatório na nota fiscal e a consulta de qualquer produto pelo NCM — com confirmação direta da Receita Federal.</p>
     </div>
-    <div class="timeline" id="timeline-simples"></div>
 
-    <div class="subgrupo-titulo">
-      <h3>Histórico — IBS, CBS e Imposto Seletivo</h3>
-      <span class="contagem" id="contagem-demais"></span>
+    <div class="rf-alertas">
+      <div class="rf-alerta">
+        <svg class="rf-alerta-icone" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="16" rx="3" stroke="var(--ambar-600)" stroke-width="1.6"/>
+          <path d="M3 9.5H21" stroke="var(--ambar-600)" stroke-width="1.6"/>
+          <path d="M7.5 3V6.4M16.5 3V6.4" stroke="var(--ambar-600)" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="16" cy="15" r="3.6" fill="var(--ambar-100)" stroke="var(--ambar-600)" stroke-width="1.3"/>
+          <path d="M16 13.1V15L17.3 16" stroke="var(--ambar-700)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="rf-alerta-corpo">
+          <span class="rf-alerta-tag">Fase atual do cronograma</span>
+          <b class="rf-alerta-titulo" id="rf-fase-atual-titulo">carregando…</b>
+          <span class="rf-alerta-nota" id="rf-fase-atual-nota"></span>
+        </div>
+      </div>
+      <div class="rf-alerta">
+        <svg class="rf-alerta-icone" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M6 3.5H14L18 7.5V20.5H6V3.5Z" stroke="var(--verde-600)" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M14 3.5V7.5H18" stroke="var(--verde-600)" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M8.7 13.2L10.6 15.1L15 10.4" stroke="var(--verde-700)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="rf-alerta-corpo">
+          <span class="rf-alerta-tag">Obrigatoriedade na NF-e</span>
+          <b class="rf-alerta-titulo">Grupo IBS/CBS obrigatório desde 03/08/2026</b>
+          <span class="rf-alerta-nota">A rejeição 1115 (grupo não informado) segue <b>suspensa</b>, sem data definida — mas isso não dispensa a obrigação de informar os dados na nota.</span>
+        </div>
+      </div>
     </div>
-    <div class="timeline" id="timeline-demais"></div>
+
+    <div class="rf-secao">
+      <div class="rf-secao-cabecalho">
+        <h2>📅 Cronograma 2026–2033</h2>
+        <span class="rf-secao-nota">O que muda a cada ano, direto da LC 214/2025</span>
+      </div>
+      <div class="rf-trilha" id="rf-trilha"></div>
+    </div>
+
+    <div class="rf-secao">
+      <div class="rf-secao-cabecalho"><h2>🧾 Obrigatoriedade na NF-e / NFC-e</h2></div>
+      <div class="rf-obrigacao">
+        <div class="rf-obrigacao-status">
+          <span class="rf-chip rf-chip--ativo">✓ Grupo IBS/CBS obrigatório</span>
+          <span class="rf-chip rf-chip--suspenso">⏸ Rejeição 1115 suspensa</span>
+        </div>
+        <div class="rf-obrigacao-linhas">
+          <div class="rf-obrigacao-linha">
+            <span class="marca-check">📄</span>
+            <div class="txt"><b>Desde 03/08/2026</b><span>NF-e (modelo 55) e NFC-e (modelo 65) devem trazer o grupo de dados de IBS/CBS, conforme a NT 2025.002 (v1.51) e o Ato Conjunto RFB/CGIBS nº 1/2026.</span></div>
+          </div>
+          <div class="rf-obrigacao-linha">
+            <span class="marca-check">⏸</span>
+            <div class="txt"><b>Rejeição 1115 sem data</b><span>A regra que bloquearia a emissão sem o grupo IBS/CBS (rejeição 1115) ainda não tem data de entrada em produção — mas a obrigação de informar os dados continua valendo mesmo sem o bloqueio técnico.</span></div>
+          </div>
+          <div class="rf-obrigacao-linha">
+            <span class="marca-check">✓</span>
+            <div class="txt"><b>Demais rejeições já valem</b><span>As outras regras de validação da reforma (fora a 1115) já rejeitam normalmente notas emitidas fora do padrão.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rf-secao">
+      <div class="rf-secao-cabecalho">
+        <h2>🔍 Consulte seu produto</h2>
+        <span class="rf-secao-nota">Digite o NCM e veja cClassTrib, CST e a confirmação oficial da Receita</span>
+      </div>
+      <div class="rf-produto-layout">
+        <div class="rf-produto-card">
+          <label for="ncm-input">NCM</label>
+          <input type="text" id="ncm-input" autocomplete="off" placeholder="6109.10.00" maxlength="12">
+          <button class="rf-produto-btn" id="ncm-btnConsultar">Consultar NCM</button>
+          <span class="rf-produto-hint">Consulta ao vivo — leva alguns segundos.</span>
+        </div>
+        <div class="rf-produto-resultado" id="ncm-result"></div>
+      </div>
+      <div class="rf-produto-rodape">
+        Fonte: <a href="https://buscadorncm.com.br" target="_blank" rel="noopener">buscadorncm.com.br</a> (agregador, consultado ao vivo) cruzado com a <a href="https://piloto-cbs.tributos.gov.br" target="_blank" rel="noopener">Calculadora oficial da Receita Federal/Serpro</a>. Muitos benefícios são <strong>condicionais</strong> — confirme se a descrição real do produto se encaixa na condição exigida, ou peça uma conferência completa para planilhas com vários produtos.
+      </div>
+    </div>
+
+    <div class="rf-secao">
+      <div class="rf-secao-cabecalho"><h2>⚖ Base de cálculo do IBS/CBS</h2></div>
+      <div class="rf-basecalculo">
+        <div class="rf-bc-coluna entra">
+          <h4>Entra na base</h4>
+          <ul>
+            <li>O valor integral cobrado pelo fornecedor, a qualquer título</li>
+            <li>Acréscimos por ajuste do valor da operação</li>
+            <li>Frete cobrado pelo próprio fornecedor ou por sua conta e ordem</li>
+            <li>Tributos e tarifas incidentes sobre a operação, suportados pelo fornecedor</li>
+            <li>Seguros, taxas e demais valores cobrados junto com a operação</li>
+          </ul>
+        </div>
+        <div class="rf-bc-coluna nao-entra">
+          <h4>Não entra na base</h4>
+          <ul>
+            <li>O próprio IBS e a própria CBS incidentes sobre a operação (cálculo "por fora")</li>
+            <li>Reembolsos por conta e ordem de terceiros, com documento fiscal em nome deles</li>
+            <li>De 01/01/2026 a 31/12/2032: o ICMS, o ISS e as contribuições ao PIS/Pasep e à Cofins ainda destacados na operação</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rf-bc-nota">Base: art. 12 da LC 214/2025. Diferente do ICMS/ISS de hoje, o IBS e a CBS são calculados "por fora" — a alíquota incide sobre o valor da operação sem que o próprio imposto infle essa base. Conteúdo educativo; casos específicos (imóveis, serviços financeiros, entre outros) têm regras próprias nos artigos seguintes da lei.</div>
+    </div>
+
+    <div class="rf-secao">
+      <div class="rf-secao-cabecalho"><h2>Evolução do placar</h2></div>
+      <div class="evolucao-wrap" id="evolucao-wrap"></div>
+
+      <div class="subgrupo-titulo">
+        <h3>Histórico — Simples Nacional</h3>
+        <span class="contagem" id="contagem-simples"></span>
+      </div>
+      <div class="timeline" id="timeline-simples"></div>
+
+      <div class="subgrupo-titulo">
+        <h3>Histórico — IBS, CBS e Imposto Seletivo</h3>
+        <span class="contagem" id="contagem-demais"></span>
+      </div>
+      <div class="timeline" id="timeline-demais"></div>
+    </div>
   </div>
 
   <div id="iss-painel" style="display:none" class="iss-painel">
@@ -496,35 +773,7 @@
     </div>
   </div>
 
-  <div id="ncm-painel" style="display:none" class="iss-painel">
-    <div class="iss-header">
-      <span class="iss-eyebrow">&#128269; Reforma Tributária &middot; IBS/CBS/Imposto Seletivo</span>
-      <h1 class="iss-h1">Consulta de classificação tributária por NCM</h1>
-      <p class="iss-lede">Digite o NCM (8 dígitos) para ver o <strong>cClassTrib</strong> e o <strong>CST IBS/CBS</strong> de referência, e se o produto tem redução/benefício ou está no regime geral, segundo a LC 214/2025 (com as alterações da LC 227/2026).</p>
-    </div>
 
-    <div class="iss-query-layout">
-      <div class="iss-card iss-search-card">
-        <div class="iss-fields">
-          <div class="iss-field">
-            <label for="ncm-input">NCM</label>
-            <input type="text" id="ncm-input" autocomplete="off" placeholder="6109.10.00" maxlength="12">
-          </div>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <button class="iss-consultar" id="ncm-btnConsultar">Consultar NCM</button>
-          <span class="iss-hint">Consulta ao vivo — leva alguns segundos.</span>
-        </div>
-      </div>
-
-      <div class="iss-card iss-result" id="ncm-result"></div>
-    </div>
-
-    <div class="iss-footer">
-      <div>Fonte: <a href="https://buscadorncm.com.br" target="_blank" rel="noopener">buscadorncm.com.br</a> — agregador especializado em NCM/Reforma Tributária, consultado ao vivo a cada busca (não é fonte oficial do governo).</div>
-      <div>Muitos benefícios são <strong>condicionais</strong> (dependem de uma característica específica do produto ou da operação, não só do NCM). Para produtos com benefício condicional, confirme se a descrição real do produto se encaixa na condição exigida — ou peça uma conferência completa se for para uma planilha de vários produtos.</div>
-    </div>
-  </div>
 </main>
 
 <footer>
@@ -979,8 +1228,70 @@
     alvo.innerHTML = html;
   }
 
+  // ---------- Cronograma da Reforma Tributária (LC 214/2025) ----------
+  // Fatos verificados em fontes oficiais/jurídicas em set/2026. Conteúdo
+  // educativo — não substitui a lei nem orientação jurídica formal. A fase
+  // atual e a contagem de dias são recalculadas a cada visita, direto da
+  // data de hoje (não dependem de nenhuma coleta diária).
+  var CRONOGRAMA_REFORMA = [
+    { ano: 2026, titulo: 'Fase de testes', tipo: 'teste',
+      desc: 'CBS a 0,9% e IBS a 0,1%, cobrados de forma neutra e compensados com PIS/Cofins e ICMS/ISS. Começa o teste do split payment (recolhimento automático na liquidação do pagamento).' },
+    { ano: 2027, titulo: 'CBS em alíquota plena', tipo: 'mudanca',
+      desc: 'PIS e Cofins são extintos. A CBS passa a ser cobrada em alíquota cheia (cerca de 8,8%) e nasce o Imposto Seletivo, sobre bens e serviços prejudiciais à saúde ou ao meio ambiente.' },
+    { ano: 2028, titulo: 'Sem mudança de alíquota', tipo: 'transicao',
+      desc: 'Ano de ajuste — CBS e Imposto Seletivo seguem como em 2027, aguardando o início da transição do ICMS/ISS para o IBS.' },
+    { ano: 2029, titulo: 'Transição do ICMS/ISS — 10%', tipo: 'transicao',
+      desc: 'Começa a troca gradual: 10% do ICMS e do ISS deixam de existir e são substituídos por IBS na mesma proporção.' },
+    { ano: 2030, titulo: 'Transição — 20%', tipo: 'transicao',
+      desc: 'Redução acumulada de 20% no ICMS e no ISS, com alta equivalente no IBS.' },
+    { ano: 2031, titulo: 'Transição — 30%', tipo: 'transicao',
+      desc: 'Redução acumulada de 30% no ICMS e no ISS.' },
+    { ano: 2032, titulo: 'Transição — 40%', tipo: 'transicao',
+      desc: 'Redução acumulada de 40% no ICMS e no ISS — último ano de convivência entre os dois sistemas.' },
+    { ano: 2033, titulo: 'Sistema novo em regra plena', tipo: 'final',
+      desc: 'ICMS e ISS são extintos. IBS e CBS passam a valer sozinhos, com alíquota de referência somada estimada em 26,5% (17,7% IBS + 8,8% CBS, estimativa do Ministério da Fazenda).' }
+  ];
+
+  function renderCronograma(){
+    var trilha = document.getElementById('rf-trilha');
+    if (!trilha) return;
+    var hoje = new Date();
+    var anoAtual = hoje.getFullYear();
+
+    var idxAtual = 0;
+    CRONOGRAMA_REFORMA.forEach(function(m, idx){ if (m.ano <= anoAtual) idxAtual = idx; });
+
+    trilha.innerHTML = CRONOGRAMA_REFORMA.map(function(m, idx){
+      var classe = 'rf-marco';
+      if (idx < idxAtual) classe += ' rf-marco--passado';
+      if (idx === idxAtual) classe += ' rf-marco--atual';
+      return '<div class="' + classe + '">' +
+        '<div class="rf-marco-selo">' + m.ano + '</div>' +
+        (idx === idxAtual ? '<span class="rf-marco-voce">Você está aqui</span>' : '') +
+        '<div class="rf-marco-titulo">' + m.titulo + '</div>' +
+        '<div class="rf-marco-desc">' + m.desc + '</div>' +
+      '</div>';
+    }).join('');
+
+    var atual = CRONOGRAMA_REFORMA[idxAtual];
+    var proximo = CRONOGRAMA_REFORMA[idxAtual + 1];
+    var tituloEl = document.getElementById('rf-fase-atual-titulo');
+    var notaEl = document.getElementById('rf-fase-atual-nota');
+    if (tituloEl) tituloEl.textContent = anoAtual + ' — ' + atual.titulo;
+    if (notaEl){
+      if (proximo){
+        var proximaData = new Date(proximo.ano, 0, 1);
+        var diasRestantes = Math.max(0, Math.ceil((proximaData - hoje) / 86400000));
+        notaEl.innerHTML = atual.desc + ' Faltam <b>' + diasRestantes + ' dia(s)</b> para "' + proximo.titulo + '" (01/01/' + proximo.ano + ').';
+      } else {
+        notaEl.textContent = atual.desc;
+      }
+    }
+  }
+
   function renderReforma(){
     renderEvolucao();
+    renderCronograma();
 
     var simples = montaHistoricoAssunto('simples_nacional');
     var demais = montaHistoricoAssunto('demais_mudancas');
@@ -993,11 +1304,9 @@
   function renderCards(){
     var modoReforma = estado.filtroMenu === 'reforma';
     var modoIss = estado.filtroMenu === 'iss';
-    var modoNcm = estado.filtroMenu === 'ncm';
-    var modoEspecial = modoReforma || modoIss || modoNcm;
+    var modoEspecial = modoReforma || modoIss;
     document.getElementById('reforma-painel').style.display = modoReforma ? '' : 'none';
     document.getElementById('iss-painel').style.display = modoIss ? '' : 'none';
-    document.getElementById('ncm-painel').style.display = modoNcm ? '' : 'none';
     document.getElementById('grid-cards').style.display = modoEspecial ? 'none' : '';
     document.querySelector('.toolbar').style.display = modoEspecial ? 'none' : '';
     document.getElementById('contagem-itens').style.display = modoEspecial ? 'none' : '';
@@ -1036,9 +1345,6 @@
       } else if (btn.dataset.filtro === 'iss'){
         estado.filtroMenu = 'iss';
         document.getElementById('titulo-secao').textContent = 'Consulta ISS';
-      } else if (btn.dataset.filtro === 'ncm'){
-        estado.filtroMenu = 'ncm';
-        document.getElementById('titulo-secao').textContent = 'Consulta NCM';
       } else if (btn.dataset.esfera){
         estado.filtroMenu = 'todos';
         estado.esfera = btn.dataset.esfera;
