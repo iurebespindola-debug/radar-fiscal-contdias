@@ -50,6 +50,7 @@
   /* ---------- Header ---------- */
   header.topo{
     position:relative;
+    z-index:30;
     background:
       radial-gradient(ellipse 520px 260px at 88% -10%, rgba(224,167,62,.16), transparent 60%),
       linear-gradient(135deg, var(--verde-900), var(--verde-700) 75%);
@@ -254,6 +255,52 @@
     font-size:26px; text-wrap:balance;
   }
   .rf-lede{ position:relative; margin:0; max-width:74ch; font-size:14px; line-height:1.6; opacity:.92; }
+
+  /* -- Mega-menu no botão "Reforma Tributária" do menu principal -- */
+  .rf-nav-item{ position:relative; }
+  .rf-nav-item .rf-nav-caret{ font-size:10px; margin-left:2px; opacity:.85; }
+  .rf-mega{
+    position:fixed; top:0; left:0; z-index:999;
+    background:var(--branco); border:1px solid var(--cinza-200); border-radius:12px;
+    box-shadow:0 18px 44px -14px rgba(18,53,36,.4);
+    padding:14px; display:none; grid-template-columns:1fr 1fr; gap:2px 24px;
+    width:540px; max-width:82vw;
+  }
+  .rf-mega.aberto{ display:grid; }
+  .rf-mega-grupo{ display:flex; flex-direction:column; gap:1px; }
+  .rf-mega-grupo-titulo{ font-size:10.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--cinza-400); padding:6px 8px 8px; }
+  .rf-mega-item{
+    display:flex; gap:10px; align-items:flex-start; padding:8px; border-radius:8px;
+    text-decoration:none; color:inherit; cursor:pointer;
+  }
+  .rf-mega-item:hover{ background:var(--verde-50); }
+  .rf-mega-selo{
+    flex:none; width:30px; height:22px; border-radius:6px; background:var(--verde-100); color:var(--verde-800);
+    font-size:9.5px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:2px;
+    letter-spacing:.2px;
+  }
+  .rf-mega-texto{ display:block; min-width:0; }
+  .rf-mega-texto b{ display:flex; align-items:center; gap:6px; font-size:13px; color:var(--cinza-900); font-weight:600; }
+  .rf-mega-texto span{ display:block; font-size:11.5px; color:var(--cinza-600); margin-top:1px; }
+  .rf-mega-novo{
+    font-size:9px; font-weight:700; letter-spacing:.3px; color:var(--verde-700); background:var(--verde-100);
+    padding:1px 6px; border-radius:999px; text-transform:uppercase;
+  }
+  @media (max-width:640px){
+    .rf-mega{ width:calc(100vw - 32px); max-width:none; grid-template-columns:1fr; }
+  }
+
+  /* -- Sub-navegação dentro da aba Reforma Tributária -- */
+  .rf-subnav{ display:flex; gap:8px; flex-wrap:wrap; }
+  .rf-subtab{
+    background:var(--cinza-100); border:1px solid var(--cinza-200); color:var(--cinza-700);
+    padding:9px 16px; border-radius:999px; font-size:13px; font-weight:600; cursor:pointer;
+    transition:background .15s ease;
+  }
+  .rf-subtab:hover{ background:var(--cinza-200); }
+  .rf-subtab.ativo{ background:var(--verde-700); border-color:var(--verde-700); color:var(--branco); }
+  .rf-subvista{ display:flex; flex-direction:column; gap:30px; }
+  .rf-subvista[hidden]{ display:none; }
 
   .rf-alertas{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
   .rf-alerta{
@@ -554,7 +601,37 @@
   </div>
   <nav class="menu" id="menu-principal">
     <button data-filtro="todos" class="ativo">Radar do Dia</button>
-    <button data-filtro="reforma">⚖ Reforma Tributária</button>
+    <div class="rf-nav-item">
+      <button data-filtro="reforma">⚖ Reforma Tributária <span class="rf-nav-caret">▾</span></button>
+      <div class="rf-mega" id="rf-mega">
+        <div class="rf-mega-grupo">
+          <div class="rf-mega-grupo-titulo">Guia &amp; alertas</div>
+          <a class="rf-mega-item" href="#" data-sub="geral" data-alvo="rf-sec-cronograma">
+            <span class="rf-mega-selo">CRON</span>
+            <span class="rf-mega-texto"><b>Cronograma 2026–2033 <span class="rf-mega-novo">novo</span></b><span>O que muda a cada ano + split payment</span></span>
+          </a>
+          <a class="rf-mega-item" href="#" data-sub="geral" data-alvo="rf-sec-obrigacao">
+            <span class="rf-mega-selo">NF-e</span>
+            <span class="rf-mega-texto"><b>Obrigatoriedade na NF-e <span class="rf-mega-novo">novo</span></b><span>NT 2025.002 · rejeição 1115</span></span>
+          </a>
+          <a class="rf-mega-item" href="#" data-sub="geral" data-alvo="rf-sec-basecalculo">
+            <span class="rf-mega-selo">BC</span>
+            <span class="rf-mega-texto"><b>Base de cálculo <span class="rf-mega-novo">novo</span></b><span>O que entra e o que abate</span></span>
+          </a>
+        </div>
+        <div class="rf-mega-grupo">
+          <div class="rf-mega-grupo-titulo">Consulta &amp; histórico</div>
+          <a class="rf-mega-item" href="#" data-sub="produto">
+            <span class="rf-mega-selo">NCM</span>
+            <span class="rf-mega-texto"><b>Consulte seu produto</b><span>cClassTrib, CST e confirmação da Receita</span></span>
+          </a>
+          <a class="rf-mega-item" href="#" data-sub="historico">
+            <span class="rf-mega-selo">HIST</span>
+            <span class="rf-mega-texto"><b>Histórico da Reforma</b><span>Evolução, Simples Nacional e IBS/CBS/IS</span></span>
+          </a>
+        </div>
+      </div>
+    </div>
     <button data-filtro="iss">🧾 Consulta ISS</button>
     <button data-esfera="Federal">Federal</button>
     <button data-esfera="Estadual">Estadual</button>
@@ -643,97 +720,109 @@
       </div>
     </div>
 
-    <div class="rf-secao">
-      <div class="rf-secao-cabecalho">
-        <h2>📅 Cronograma 2026–2033</h2>
-        <span class="rf-secao-nota">O que muda a cada ano, direto da LC 214/2025</span>
-      </div>
-      <div class="rf-trilha" id="rf-trilha"></div>
+    <div class="rf-subnav">
+      <button type="button" class="rf-subtab ativo" data-subvista="geral">📋 Visão geral</button>
+      <button type="button" class="rf-subtab" data-subvista="produto">🔍 Consulte seu produto</button>
+      <button type="button" class="rf-subtab" data-subvista="historico">📈 Histórico</button>
     </div>
 
-    <div class="rf-secao">
-      <div class="rf-secao-cabecalho"><h2>🧾 Obrigatoriedade na NF-e / NFC-e</h2></div>
-      <div class="rf-obrigacao">
-        <div class="rf-obrigacao-status">
-          <span class="rf-chip rf-chip--ativo">✓ Grupo IBS/CBS obrigatório</span>
-          <span class="rf-chip rf-chip--suspenso">⏸ Rejeição 1115 suspensa</span>
+    <div class="rf-subvista" data-subvista-alvo="geral">
+      <div class="rf-secao" id="rf-sec-cronograma">
+        <div class="rf-secao-cabecalho">
+          <h2>📅 Cronograma 2026–2033</h2>
+          <span class="rf-secao-nota">O que muda a cada ano, direto da LC 214/2025</span>
         </div>
-        <div class="rf-obrigacao-linhas">
-          <div class="rf-obrigacao-linha">
-            <span class="marca-check">📄</span>
-            <div class="txt"><b>Desde 03/08/2026</b><span>NF-e (modelo 55) e NFC-e (modelo 65) devem trazer o grupo de dados de IBS/CBS, conforme a NT 2025.002 (v1.51) e o Ato Conjunto RFB/CGIBS nº 1/2026.</span></div>
+        <div class="rf-trilha" id="rf-trilha"></div>
+      </div>
+
+      <div class="rf-secao" id="rf-sec-obrigacao">
+        <div class="rf-secao-cabecalho"><h2>🧾 Obrigatoriedade na NF-e / NFC-e</h2></div>
+        <div class="rf-obrigacao">
+          <div class="rf-obrigacao-status">
+            <span class="rf-chip rf-chip--ativo">✓ Grupo IBS/CBS obrigatório</span>
+            <span class="rf-chip rf-chip--suspenso">⏸ Rejeição 1115 suspensa</span>
           </div>
-          <div class="rf-obrigacao-linha">
-            <span class="marca-check">⏸</span>
-            <div class="txt"><b>Rejeição 1115 sem data</b><span>A regra que bloquearia a emissão sem o grupo IBS/CBS (rejeição 1115) ainda não tem data de entrada em produção — mas a obrigação de informar os dados continua valendo mesmo sem o bloqueio técnico.</span></div>
+          <div class="rf-obrigacao-linhas">
+            <div class="rf-obrigacao-linha">
+              <span class="marca-check">📄</span>
+              <div class="txt"><b>Desde 03/08/2026</b><span>NF-e (modelo 55) e NFC-e (modelo 65) devem trazer o grupo de dados de IBS/CBS, conforme a NT 2025.002 (v1.51) e o Ato Conjunto RFB/CGIBS nº 1/2026.</span></div>
+            </div>
+            <div class="rf-obrigacao-linha">
+              <span class="marca-check">⏸</span>
+              <div class="txt"><b>Rejeição 1115 sem data</b><span>A regra que bloquearia a emissão sem o grupo IBS/CBS (rejeição 1115) ainda não tem data de entrada em produção — mas a obrigação de informar os dados continua valendo mesmo sem o bloqueio técnico.</span></div>
+            </div>
+            <div class="rf-obrigacao-linha">
+              <span class="marca-check">✓</span>
+              <div class="txt"><b>Demais rejeições já valem</b><span>As outras regras de validação da reforma (fora a 1115) já rejeitam normalmente notas emitidas fora do padrão.</span></div>
+            </div>
           </div>
-          <div class="rf-obrigacao-linha">
-            <span class="marca-check">✓</span>
-            <div class="txt"><b>Demais rejeições já valem</b><span>As outras regras de validação da reforma (fora a 1115) já rejeitam normalmente notas emitidas fora do padrão.</span></div>
+        </div>
+      </div>
+
+      <div class="rf-secao" id="rf-sec-basecalculo">
+        <div class="rf-secao-cabecalho"><h2>⚖ Base de cálculo do IBS/CBS</h2></div>
+        <div class="rf-basecalculo">
+          <div class="rf-bc-coluna entra">
+            <h4>Entra na base</h4>
+            <ul>
+              <li>O valor integral cobrado pelo fornecedor, a qualquer título</li>
+              <li>Acréscimos por ajuste do valor da operação</li>
+              <li>Frete cobrado pelo próprio fornecedor ou por sua conta e ordem</li>
+              <li>Tributos e tarifas incidentes sobre a operação, suportados pelo fornecedor</li>
+              <li>Seguros, taxas e demais valores cobrados junto com a operação</li>
+            </ul>
+          </div>
+          <div class="rf-bc-coluna nao-entra">
+            <h4>Não entra na base</h4>
+            <ul>
+              <li>O próprio IBS e a própria CBS incidentes sobre a operação (cálculo "por fora")</li>
+              <li>Reembolsos por conta e ordem de terceiros, com documento fiscal em nome deles</li>
+              <li>De 01/01/2026 a 31/12/2032: o ICMS, o ISS e as contribuições ao PIS/Pasep e à Cofins ainda destacados na operação</li>
+            </ul>
           </div>
         </div>
+        <div class="rf-bc-nota">Base: art. 12 da LC 214/2025. Diferente do ICMS/ISS de hoje, o IBS e a CBS são calculados "por fora" — a alíquota incide sobre o valor da operação sem que o próprio imposto infle essa base. Conteúdo educativo; casos específicos (imóveis, serviços financeiros, entre outros) têm regras próprias nos artigos seguintes da lei.</div>
       </div>
     </div>
 
-    <div class="rf-secao">
-      <div class="rf-secao-cabecalho">
-        <h2>🔍 Consulte seu produto</h2>
-        <span class="rf-secao-nota">Digite o NCM e veja cClassTrib, CST e a confirmação oficial da Receita</span>
-      </div>
-      <div class="rf-produto-layout">
-        <div class="rf-produto-card">
-          <label for="ncm-input">NCM</label>
-          <input type="text" id="ncm-input" autocomplete="off" placeholder="6109.10.00" maxlength="12">
-          <button class="rf-produto-btn" id="ncm-btnConsultar">Consultar NCM</button>
-          <span class="rf-produto-hint">Consulta ao vivo — leva alguns segundos.</span>
+    <div class="rf-subvista" data-subvista-alvo="produto" hidden>
+      <div class="rf-secao" id="rf-sec-produto">
+        <div class="rf-secao-cabecalho">
+          <h2>🔍 Consulte seu produto</h2>
+          <span class="rf-secao-nota">Digite o NCM e veja cClassTrib, CST e a confirmação oficial da Receita</span>
         </div>
-        <div class="rf-produto-resultado" id="ncm-result"></div>
-      </div>
-      <div class="rf-produto-rodape">
-        Fonte: <a href="https://buscadorncm.com.br" target="_blank" rel="noopener">buscadorncm.com.br</a> (agregador, consultado ao vivo) cruzado com a <a href="https://piloto-cbs.tributos.gov.br" target="_blank" rel="noopener">Calculadora oficial da Receita Federal/Serpro</a>. Muitos benefícios são <strong>condicionais</strong> — confirme se a descrição real do produto se encaixa na condição exigida, ou peça uma conferência completa para planilhas com vários produtos.
+        <div class="rf-produto-layout">
+          <div class="rf-produto-card">
+            <label for="ncm-input">NCM</label>
+            <input type="text" id="ncm-input" autocomplete="off" placeholder="6109.10.00" maxlength="12">
+            <button class="rf-produto-btn" id="ncm-btnConsultar">Consultar NCM</button>
+            <span class="rf-produto-hint">Consulta ao vivo — leva alguns segundos.</span>
+          </div>
+          <div class="rf-produto-resultado" id="ncm-result"></div>
+        </div>
+        <div class="rf-produto-rodape">
+          Fonte: <a href="https://buscadorncm.com.br" target="_blank" rel="noopener">buscadorncm.com.br</a> (agregador, consultado ao vivo) cruzado com a <a href="https://piloto-cbs.tributos.gov.br" target="_blank" rel="noopener">Calculadora oficial da Receita Federal/Serpro</a>. Muitos benefícios são <strong>condicionais</strong> — confirme se a descrição real do produto se encaixa na condição exigida, ou peça uma conferência completa para planilhas com vários produtos.
+        </div>
       </div>
     </div>
 
-    <div class="rf-secao">
-      <div class="rf-secao-cabecalho"><h2>⚖ Base de cálculo do IBS/CBS</h2></div>
-      <div class="rf-basecalculo">
-        <div class="rf-bc-coluna entra">
-          <h4>Entra na base</h4>
-          <ul>
-            <li>O valor integral cobrado pelo fornecedor, a qualquer título</li>
-            <li>Acréscimos por ajuste do valor da operação</li>
-            <li>Frete cobrado pelo próprio fornecedor ou por sua conta e ordem</li>
-            <li>Tributos e tarifas incidentes sobre a operação, suportados pelo fornecedor</li>
-            <li>Seguros, taxas e demais valores cobrados junto com a operação</li>
-          </ul>
+    <div class="rf-subvista" data-subvista-alvo="historico" hidden>
+      <div class="rf-secao" id="rf-sec-evolucao">
+        <div class="rf-secao-cabecalho"><h2>📈 Histórico da Reforma Tributária</h2></div>
+        <div class="evolucao-wrap" id="evolucao-wrap"></div>
+
+        <div class="subgrupo-titulo">
+          <h3>Histórico — Simples Nacional</h3>
+          <span class="contagem" id="contagem-simples"></span>
         </div>
-        <div class="rf-bc-coluna nao-entra">
-          <h4>Não entra na base</h4>
-          <ul>
-            <li>O próprio IBS e a própria CBS incidentes sobre a operação (cálculo "por fora")</li>
-            <li>Reembolsos por conta e ordem de terceiros, com documento fiscal em nome deles</li>
-            <li>De 01/01/2026 a 31/12/2032: o ICMS, o ISS e as contribuições ao PIS/Pasep e à Cofins ainda destacados na operação</li>
-          </ul>
+        <div class="timeline" id="timeline-simples"></div>
+
+        <div class="subgrupo-titulo">
+          <h3>Histórico — IBS, CBS e Imposto Seletivo</h3>
+          <span class="contagem" id="contagem-demais"></span>
         </div>
+        <div class="timeline" id="timeline-demais"></div>
       </div>
-      <div class="rf-bc-nota">Base: art. 12 da LC 214/2025. Diferente do ICMS/ISS de hoje, o IBS e a CBS são calculados "por fora" — a alíquota incide sobre o valor da operação sem que o próprio imposto infle essa base. Conteúdo educativo; casos específicos (imóveis, serviços financeiros, entre outros) têm regras próprias nos artigos seguintes da lei.</div>
-    </div>
-
-    <div class="rf-secao">
-      <div class="rf-secao-cabecalho"><h2>Evolução do placar</h2></div>
-      <div class="evolucao-wrap" id="evolucao-wrap"></div>
-
-      <div class="subgrupo-titulo">
-        <h3>Histórico — Simples Nacional</h3>
-        <span class="contagem" id="contagem-simples"></span>
-      </div>
-      <div class="timeline" id="timeline-simples"></div>
-
-      <div class="subgrupo-titulo">
-        <h3>Histórico — IBS, CBS e Imposto Seletivo</h3>
-        <span class="contagem" id="contagem-demais"></span>
-      </div>
-      <div class="timeline" id="timeline-demais"></div>
     </div>
   </div>
 
@@ -1327,6 +1416,67 @@
 
     document.getElementById('contagem-itens').textContent = itens.length + ' item(ns)';
     preencherGrid('grid-cards', itens, 'Nenhuma notícia encontrada com esses filtros.');
+  }
+
+  // Sub-navegação dentro da aba Reforma Tributária (Visão geral / Consulte
+  // seu produto / Histórico) — evita empilhar tudo numa rolagem só e tira
+  // a duplicação visual com o placar fixo do topo.
+  document.querySelectorAll('.rf-subtab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var alvo = btn.dataset.subvista;
+      document.querySelectorAll('.rf-subtab').forEach(function(b){ b.classList.toggle('ativo', b === btn); });
+      document.querySelectorAll('.rf-subvista').forEach(function(sv){
+        sv.hidden = sv.dataset.subvistaAlvo !== alvo;
+      });
+    });
+  });
+
+  // Mega-menu do botão "Reforma Tributária" — organiza o acesso às seções
+  // em vez de depender só da rolagem.
+  var rfNavItem = document.querySelector('.rf-nav-item');
+  var rfMega = document.getElementById('rf-mega');
+  if (rfNavItem && rfMega){
+    // .rf-mega usa position:fixed (o header tem overflow:hidden para o
+    // efeito de fundo, que cortaria um dropdown absoluto); por isso a
+    // posição é calculada em JS toda vez que o menu abre.
+    function posicionarMega(){
+      var rect = rfNavItem.getBoundingClientRect();
+      var largura = rfMega.offsetWidth || 540;
+      var left = Math.max(12, Math.min(rect.left, window.innerWidth - largura - 12));
+      rfMega.style.top = (rect.bottom + 8) + 'px';
+      rfMega.style.left = left + 'px';
+    }
+    rfNavItem.addEventListener('mouseenter', function(){ posicionarMega(); rfMega.classList.add('aberto'); });
+    rfNavItem.addEventListener('mouseleave', function(){ rfMega.classList.remove('aberto'); });
+    var rfCaret = rfNavItem.querySelector('.rf-nav-caret');
+    if (rfCaret){
+      rfCaret.addEventListener('click', function(e){
+        e.stopPropagation();
+        if (!rfMega.classList.contains('aberto')) posicionarMega();
+        rfMega.classList.toggle('aberto');
+      });
+    }
+    document.addEventListener('click', function(e){
+      if (!rfNavItem.contains(e.target)) rfMega.classList.remove('aberto');
+    });
+    rfMega.querySelectorAll('.rf-mega-item').forEach(function(a){
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        rfMega.classList.remove('aberto');
+        var subAlvo = a.dataset.sub;
+        var scrollAlvo = a.dataset.alvo;
+        var btnReformaNav = document.querySelector('#menu-principal button[data-filtro="reforma"]');
+        if (estado.filtroMenu !== 'reforma' && btnReformaNav) btnReformaNav.click();
+        if (subAlvo){
+          var subBtn = document.querySelector('.rf-subtab[data-subvista="' + subAlvo + '"]');
+          if (subBtn) subBtn.click();
+        }
+        requestAnimationFrame(function(){
+          var elemento = scrollAlvo ? document.getElementById(scrollAlvo) : document.getElementById('reforma-painel');
+          if (elemento) elemento.scrollIntoView({ behavior:'smooth', block:'start' });
+        });
+      });
+    });
   }
 
   // Menu principal
