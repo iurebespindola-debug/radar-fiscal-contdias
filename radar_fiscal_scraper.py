@@ -702,7 +702,7 @@ PADRAO_BLOCO = re.compile(
 )
 
 
-def atualizar_html(itens, caminho_html=HTML_PATH):
+def atualizar_html(itens, caminho_html=HTML_PATH, alertas_reforma=None):
     if not caminho_html.exists():
         print(f"[ERRO] Não encontrei {caminho_html}. Coloque este script na mesma pasta do radar_fiscal_contdias.html.")
         return False
@@ -716,6 +716,13 @@ def atualizar_html(itens, caminho_html=HTML_PATH):
         "reforma_tributaria": placar,
         "historico_reforma": historico_reforma,
         "itens": itens,
+        # Notícias do dia que sugerem mudança de norma na Central da Reforma
+        # Tributária (ver detectar_alertas_reforma) — o frontend mostra um
+        # banner de alerta na aba quando essa lista não está vazia.
+        "alertas_reforma": [
+            {"titulo": i["titulo"], "url": i["url"], "fonte": i["fonte"], "data": i["data"]}
+            for i in (alertas_reforma or [])
+        ],
     }
 
     # formata o offset -0300 como -03:00 (ISO correto)
@@ -828,6 +835,33 @@ def detectar_mencoes_lc116(itens):
     for i in itens:
         texto = (i["titulo"] + " " + (i.get("resumo") or ""))
         if PADRAO_LC116.search(texto):
+            achados.append(i)
+    return achados
+
+
+# Notícia que sinaliza uma mudança normativa que pode afetar o que já
+# publicamos na Central da Reforma Tributária (cronograma 2026-2033,
+# obrigatoriedade na NF-e/NT 2025.002, base de cálculo do art. 12 da
+# LC 214/2025) — mesma lógica da LC 116: não reescrevemos esse conteúdo
+# sozinhos, só avisamos para alguém revisar e pedir a atualização do texto
+# se for o caso.
+PADRAO_ALERTA_REFORMA = re.compile(
+    r"nota t[ée]cnica\s*2025\.?\s*002|nt\s*2025\.?\s*002"
+    r"|rejei[çc][ãa]o\s*1115"
+    r"|(?:adi(?:a|amento)|prorroga(?:[çc][ãa]o)?|antecipa(?:[çc][ãa]o)?)\w*\s+.{0,40}"
+    r"(?:cronograma|reforma tribut[áa]ria|\bibs\b|\bcbs\b)"
+    r"|(?:cronograma|reforma tribut[áa]ria)\s+.{0,40}(?:adi(?:a|amento)|prorroga|antecipa)\w*"
+    r"|altera(?:[çc][ãa]o)?\s+.{0,30}\blc\s*214\b"
+    r"|base de c[áa]lculo\s+.{0,30}(?:ibs|cbs).{0,30}(?:muda|altera|nova regra)",
+    re.IGNORECASE,
+)
+
+
+def detectar_alertas_reforma(itens):
+    achados = []
+    for i in itens:
+        texto = (i["titulo"] + " " + (i.get("resumo") or ""))
+        if PADRAO_ALERTA_REFORMA.search(texto):
             achados.append(i)
     return achados
 
@@ -1068,7 +1102,25 @@ por segurança; se for o caso, revise e peça para eu atualizar o texto.
 </td></tr>"""
 
 
-def _monta_html_boletim(itens_curados, total_coletado, restante, data_str, fontes_quebradas=None, mencoes_lc116=None):
+def _monta_alerta_reforma_html(alertas_reforma):
+    if not alertas_reforma:
+        return ""
+    linhas = "".join(
+        f'<div style="padding:3px 0">&bull; <a href="{i["url"]}" style="color:#8A5A12" target="_blank" rel="noopener">{i["titulo"]}</a> ({i["fonte"]})</div>'
+        for i in alertas_reforma
+    )
+    return f"""
+<tr><td style="padding:14px 22px 0">
+<div style="background:#FCEFD8;border:1px solid #E0A73E;border-radius:8px;padding:12px 16px;font-size:12.5px;color:#5C3D0B">
+<b>&#9878; Fique de olho na Central da Reforma Tributária:</b> {len(alertas_reforma)} notícia(s) de hoje pode(m) indicar
+mudança no cronograma, na obrigatoriedade da NF-e ou na base de cálculo do IBS/CBS que já publicamos no site. Esse
+conteúdo não é reescrito sozinho por segurança; revise e peça para eu atualizar o texto se for o caso.
+{linhas}
+</div>
+</td></tr>"""
+
+
+def _monta_html_boletim(itens_curados, total_coletado, restante, data_str, fontes_quebradas=None, mencoes_lc116=None, alertas_reforma=None):
     n_alto = sum(1 for i in itens_curados if i["impacto"] == "alto")
     n_medio = sum(1 for i in itens_curados if i["impacto"] == "medio")
 
@@ -1132,6 +1184,7 @@ def _monta_html_boletim(itens_curados, total_coletado, restante, data_str, fonte
 </td></tr>
 {_monta_alerta_fontes_html(fontes_quebradas)}
 {_monta_alerta_lc116_html(mencoes_lc116)}
+{_monta_alerta_reforma_html(alertas_reforma)}
 <tr><td style="background:#E0A73E;height:5px;line-height:5px;font-size:0">&nbsp;</td></tr>
 <tr><td style="background:#fff;border:1px solid #E1E5E9;border-top:none;border-radius:0 0 10px 10px;padding:4px 22px 22px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">{"".join(secoes)}</table>
@@ -1145,7 +1198,7 @@ Boletim automatico diario &mdash; Fique de olho, Contdias<br>{rodape_extra}
 </body></html>"""
 
 
-def enviar_boletim_email(itens, fontes_quebradas=None, mencoes_lc116=None):
+def enviar_boletim_email(itens, fontes_quebradas=None, mencoes_lc116=None, alertas_reforma=None):
     """
     Envia por e-mail, todo dia, só o que é impacto ALTO ou MÉDIO (a curadoria
     do que realmente importa — veja selecionar_curadoria()). Impacto BAIXO
@@ -1161,6 +1214,11 @@ def enviar_boletim_email(itens, fontes_quebradas=None, mencoes_lc116=None):
     mencoes_lc116: lista opcional (de detectar_mencoes_lc116()) de notícias
     do dia que mencionam a LC 116/2003 — vira um aviso para revisão manual
     das regras da Consulta ISS.
+
+    alertas_reforma: lista opcional (de detectar_alertas_reforma()) de
+    notícias do dia que podem indicar mudança no cronograma, na
+    obrigatoriedade da NF-e ou na base de cálculo do IBS/CBS — vira um
+    aviso para revisão manual do conteúdo da Central da Reforma Tributária.
     """
     host = os.environ.get("RADAR_SMTP_HOST")
     porta = os.environ.get("RADAR_SMTP_PORT")
@@ -1178,7 +1236,7 @@ def enviar_boletim_email(itens, fontes_quebradas=None, mencoes_lc116=None):
 
     curados, restante = selecionar_curadoria(itens)
     data_str = datetime.now(TZ_BR).strftime("%d/%m/%Y")
-    html = _monta_html_boletim(curados, len(itens), restante, data_str, fontes_quebradas, mencoes_lc116)
+    html = _monta_html_boletim(curados, len(itens), restante, data_str, fontes_quebradas, mencoes_lc116, alertas_reforma)
 
     linhas_txt = [
         f"Fique de olho ⚠ — Boletim de {data_str}",
@@ -1239,7 +1297,12 @@ def main():
     if mencoes_lc116:
         print(f"\n[lc116] {len(mencoes_lc116)} notícia(s) de hoje menciona(m) a LC 116/2003 — revisão manual recomendada.")
 
-    ok = atualizar_html(itens)
+    alertas_reforma = detectar_alertas_reforma(itens)
+    if alertas_reforma:
+        print(f"\n[reforma] {len(alertas_reforma)} notícia(s) de hoje sugerem mudança de norma na Central da "
+              "Reforma Tributária (cronograma/NF-e/base de cálculo) — revisão manual recomendada.")
+
+    ok = atualizar_html(itens, alertas_reforma=alertas_reforma)
 
     print("\nChecando se a base de alíquotas de ISS mudou...")
     try:
@@ -1252,7 +1315,7 @@ def main():
         publicar_no_github()
 
     if enviar_email:
-        enviar_boletim_email(itens, fontes_quebradas, mencoes_lc116)
+        enviar_boletim_email(itens, fontes_quebradas, mencoes_lc116, alertas_reforma)
 
     if ok:
         print("\nConcluído. Abra o radar_fiscal_contdias.html no navegador para ver o resultado.")

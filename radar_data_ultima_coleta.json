@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-14T12:03:43-03:00",
+  "gerado_em": "2026-09-14T21:27:01-03:00",
   "exemplo": false,
   "reforma_tributaria": [
     {
@@ -44,44 +44,32 @@
           "url": "https://cfc.org.br/noticias/cfc-apresenta-19-pontos-de-aprimoramento-na-regulamentacao-do-simples-nacional/",
           "fonte": "Conselho Federal de Contabilidade (CFC)",
           "impacto": "medio"
-        },
-        {
-          "titulo": "Simples Nacional: 26 municípios assumem cobrança de débitos em outubro",
-          "url": "https://www.contabeis.com.br/noticias/79384/simples-nacional-26-municipios-assumem-cobranca-de-debitos-em-outubro/",
-          "fonte": "Portal Contábeis",
-          "impacto": "medio"
-        },
-        {
-          "titulo": "CFC apresenta 19 pontos para aprimorar o Simples Nacional",
-          "url": "https://www.contabeis.com.br/noticias/79385/cfc-apresenta-19-pontos-para-aprimorar-o-simples-nacional/",
-          "fonte": "Portal Contábeis",
-          "impacto": "medio"
-        },
-        {
-          "titulo": "Simples Nacional Híbrido: Vale a Pena Optar em 2027?",
-          "url": "https://jornalcontabil.com.br/noticia/simples-nacional-hibrido-vale-a-pena/",
-          "fonte": "Jornal Contábil",
-          "impacto": "medio"
         }
       ],
       "demais_mudancas": [
         {
-          "titulo": "Reforma tributária: loteamento e parcelamento do solo",
-          "url": "https://www.contabeis.com.br/noticias/79394/reforma-tributaria-loteamento-e-parcelamento-do-solo/",
+          "titulo": "Receita Federal publica nova documentação técnica das APIs de apuração da CBS",
+          "url": "https://www.gov.br/receitafederal/pt-br/assuntos/noticias/2026/setembro/receita-federal-publica-nova-documentacao-tecnica-das-apis-de-apuracao-de-cbs",
+          "fonte": "Receita Federal",
+          "impacto": "medio"
+        },
+        {
+          "titulo": "Reforma Tributária e CSC: Impactos em Centros Compartilhados",
+          "url": "https://www.contabeis.com.br/noticias/79398/reforma-tributaria-e-csc-impactos-em-centros-compartilhados/",
+          "fonte": "Portal Contábeis",
+          "impacto": "alto"
+        },
+        {
+          "titulo": "IBS: Receita esclarece IR sobre venda de bem de casal",
+          "url": "https://www.contabeis.com.br/noticias/79391/ibs-receita-esclarece-ir-sobre-venda-de-bem-de-casal/",
           "fonte": "Portal Contábeis",
           "impacto": "medio"
         },
         {
-          "titulo": "IBS: Comitê busca parceiros para devolver créditos",
-          "url": "https://www.contabeis.com.br/noticias/79386/ibs-comite-busca-parceiros-para-devolver-creditos/",
-          "fonte": "Portal Contábeis",
-          "impacto": "medio"
-        },
-        {
-          "titulo": "CBS 2027: TCU receberá ainda hoje (14) proposta para calcular alíquota",
-          "url": "https://www.contabeis.com.br/noticias/79383/cbs-2027-tcu-recebera-ainda-hoje-14-proposta-para-calcular-aliquota/",
-          "fonte": "Portal Contábeis",
-          "impacto": "medio"
+          "titulo": "Receita atende contadores e anuncia APIs gratuitas para a CBS",
+          "url": "https://jornalcontabil.com.br/noticia/receita-atende-contadores-e-anuncia-apis-gratuitas-para-a-cbs/",
+          "fonte": "Jornal Contábil",
+          "impacto": "alto"
         },
         {
           "titulo": "Reforma Tributária em 2027: a empresa que ainda está discutindo alíquota está olhando para o problema errado",
@@ -93,6 +81,30 @@
     }
   ],
   "itens": [
+    {
+      "id": "receita-federal-publica-nova-documenta-o-t-cnica-das-apis-de-caodecbs",
+      "titulo": "Receita Federal publica nova documentação técnica das APIs de apuração da CBS",
+      "resumo": "Nova versão permitirá consultas incrementais, reduzindo o tempo de processamento e o volume de dados trafegados.",
+      "esfera": "Federal",
+      "impacto": "medio",
+      "data": "2026-09-14",
+      "fonte": "Receita Federal",
+      "url": "https://www.gov.br/receitafederal/pt-br/assuntos/noticias/2026/setembro/receita-federal-publica-nova-documentacao-tecnica-das-apis-de-apuracao-de-cbs",
+      "tags": [
+        "CBS"
+      ]
+    },
+    {
+      "id": "projeto-isenta-profissionais-da-sa-de-do-imposto-de-renda-so-eprivada",
+      "titulo": "Projeto isenta profissionais da saúde do Imposto de Renda sobre horas extras nas redes pública e privada",
+      "resumo": "Texto está em análise na Câmara dos Deputados",
+      "esfera": "Federal",
+      "impacto": "baixo",
+      "data": "2026-09-14",
+      "fonte": "Câmara dos Deputados",
+      "url": "https://www.camara.leg.br/noticias/1303066-projeto-isenta-profissionais-da-saude-do-imposto-de-renda-sobre-horas-extras-nas-redes-publica-e-privada",
+      "tags": []
+    },
     {
       "id": "cfc-apresenta-19-pontos-de-aprimoramento-na-regulamenta-o-do-nacional",
       "titulo": "CFC apresenta 19 pontos de aprimoramento na regulamentação do Simples Nacional",
@@ -107,88 +119,68 @@
       ]
     },
     {
-      "id": "obriga-es-tribut-rias-que-vencem-nesta-ter-a-15--aterca15",
-      "titulo": "Obrigações tributárias que vencem nesta terça (15)",
-      "resumo": "EFD-Contribuições e EFD-Reinf estão entre as obrigações tributárias com prazo de entrega nesta terça-feira, 15 de setembro. Leia mais em https://www.contabeis.com.br/noticias/79387/obrigacoes-tributarias-que-vencem-nesta-terca-15/",
+      "id": "reforma-tribut-ria-e-csc-impactos-em-centros-compartilhados-tilhados",
+      "titulo": "Reforma Tributária e CSC: Impactos em Centros Compartilhados",
+      "resumo": "Entenda como a reforma tributária afeta os Centros de Serviços Compartilhados (CSC). Analise mudanças nos impostos e estratégias para otimizar a eficiência de seu grupo empresarial. Leia mais em https://www.contabeis.com.br/noticias/79398/reforma-tributaria-e-csc-impactos-em-cent",
       "esfera": "Federal",
-      "impacto": "medio",
+      "impacto": "alto",
       "data": "2026-09-14",
       "fonte": "Portal Contábeis",
-      "url": "https://www.contabeis.com.br/noticias/79387/obrigacoes-tributarias-que-vencem-nesta-terca-15/",
+      "url": "https://www.contabeis.com.br/noticias/79398/reforma-tributaria-e-csc-impactos-em-centros-compartilhados/",
       "tags": [
-        "prazo"
+        "Reforma Tributária"
       ]
     },
     {
-      "id": "simples-nacional-26-munic-pios-assumem-cobran-a-de-d-bitos-e-moutubro",
-      "titulo": "Simples Nacional: 26 municípios assumem cobrança de débitos em outubro",
-      "resumo": "Convênios permitem que 26 municípios inscrevam e cobrem débitos de ISS do Simples Nacional a partir de 1º de outubro de 2026. Leia mais em https://www.contabeis.com.br/noticias/79384/simples-nacional-26-municipios-assumem-cobranca-de-debitos-em-outubro/",
+      "id": "stf-mant-m-cr-ditos-de-icms-em-opera-es-com-combust-veis-ustiveis",
+      "titulo": "STF mantém créditos de ICMS em operações com combustíveis",
+      "resumo": "STF decide que empresas podem manter créditos de ICMS de operações internas anteriores à venda interestadual de combustíveis. Leia mais em https://www.contabeis.com.br/noticias/79396/stf-mantem-creditos-de-icms-em-operacoes-com-combustiveis/",
       "esfera": "Federal",
       "impacto": "medio",
       "data": "2026-09-14",
       "fonte": "Portal Contábeis",
-      "url": "https://www.contabeis.com.br/noticias/79384/simples-nacional-26-municipios-assumem-cobranca-de-debitos-em-outubro/",
+      "url": "https://www.contabeis.com.br/noticias/79396/stf-mantem-creditos-de-icms-em-operacoes-com-combustiveis/",
       "tags": [
-        "ISS",
-        "Simples Nacional"
+        "ICMS"
       ]
     },
     {
-      "id": "reforma-tribut-ria-loteamento-e-parcelamento-do-solo-todosolo",
-      "titulo": "Reforma tributária: loteamento e parcelamento do solo",
-      "resumo": "Entenda os impactos da Reforma Tributária em loteamento e parcelamento do solo. Descubra como as novas regras de IBS e CBS afetam o setor imobiliário e contábil. Leia mais em https://www.contabeis.com.br/noticias/79394/reforma-tributaria-loteamento-e-parcelamento-do-solo/",
+      "id": "ibs-receita-esclarece-ir-sobre-venda-de-bem-de-casal-mdecasal",
+      "titulo": "IBS: Receita esclarece IR sobre venda de bem de casal",
+      "resumo": "Receita Federal define como deve ser calculado o ganho de capital na venda de bem comum de casais em comunhão parcial ou universal. Leia mais em https://www.contabeis.com.br/noticias/79391/ibs-receita-esclarece-ir-sobre-venda-de-bem-de-casal/",
       "esfera": "Federal",
       "impacto": "medio",
       "data": "2026-09-14",
       "fonte": "Portal Contábeis",
-      "url": "https://www.contabeis.com.br/noticias/79394/reforma-tributaria-loteamento-e-parcelamento-do-solo/",
-      "tags": [
-        "IBS",
-        "CBS",
-        "Reforma Tributária",
-        "Parcelamento"
-      ]
-    },
-    {
-      "id": "ibs-comit-busca-parceiros-para-devolver-cr-ditos-creditos",
-      "titulo": "IBS: Comitê busca parceiros para devolver créditos",
-      "resumo": "Comitê Gestor do IBS abriu chamamento para desenvolver sistema que permitirá às empresas solicitar o ressarcimento de saldos credores do novo imposto. Leia mais em https://www.contabeis.com.br/noticias/79386/ibs-comite-busca-parceiros-para-devolver-creditos/",
-      "esfera": "Federal",
-      "impacto": "medio",
-      "data": "2026-09-14",
-      "fonte": "Portal Contábeis",
-      "url": "https://www.contabeis.com.br/noticias/79386/ibs-comite-busca-parceiros-para-devolver-creditos/",
+      "url": "https://www.contabeis.com.br/noticias/79391/ibs-receita-esclarece-ir-sobre-venda-de-bem-de-casal/",
       "tags": [
         "IBS"
       ]
     },
     {
-      "id": "cfc-apresenta-19-pontos-para-aprimorar-o-simples-nacional-nacional",
-      "titulo": "CFC apresenta 19 pontos para aprimorar o Simples Nacional",
-      "resumo": "CFC apresenta 19 pontos para aprimorar a regulamentação do Simples Nacional durante a transição para IBS e CBS . Leia mais em https://www.contabeis.com.br/noticias/79385/cfc-apresenta-19-pontos-para-aprimorar-o-simples-nacional/",
+      "id": "receita-atende-contadores-e-anuncia-apis-gratuitas-para-a-cb-paraacbs",
+      "titulo": "Receita atende contadores e anuncia APIs gratuitas para a CBS",
+      "resumo": "Mudança promete agilizar a rotina de grandes empresas e desenvolvedores de sistemas a partir de outubro de 2026 O post Receita atende contadores e anuncia APIs gratuitas para a CBS apareceu primeiro em Jornal Contábil - Independência e compromisso .",
       "esfera": "Federal",
-      "impacto": "medio",
+      "impacto": "alto",
       "data": "2026-09-14",
-      "fonte": "Portal Contábeis",
-      "url": "https://www.contabeis.com.br/noticias/79385/cfc-apresenta-19-pontos-para-aprimorar-o-simples-nacional/",
+      "fonte": "Jornal Contábil",
+      "url": "https://jornalcontabil.com.br/noticia/receita-atende-contadores-e-anuncia-apis-gratuitas-para-a-cbs/",
       "tags": [
-        "IBS",
-        "CBS",
-        "Simples Nacional"
+        "CBS"
       ]
     },
     {
-      "id": "cbs-2027-tcu-receber-ainda-hoje-14-proposta-para-calcular-al-aliquota",
-      "titulo": "CBS 2027: TCU receberá ainda hoje (14) proposta para calcular alíquota",
-      "resumo": "Receita Federal envia ao TCU modelo para calcular a alíquota da CBS , que substituirá PIS , Cofins e IOF-Seguros a partir de 2027. Leia mais em https://www.contabeis.com.br/noticias/79383/cbs-2027-tcu-recebera-ainda-hoje-14-proposta-para-calcular-aliquota/",
+      "id": "cfc-entrega-receita-19-propostas-para-aprimorar-regras-do-si-osimples",
+      "titulo": "CFC entrega à Receita 19 propostas para aprimorar regras do Simples",
+      "resumo": "Comité e fisco debatem transição tributária com foco no prazo de opção das empresas, que se encerra este mês O post CFC entrega à Receita 19 propostas para aprimorar regras do Simples apareceu primeiro em Jornal Contábil - Independência e compromisso .",
       "esfera": "Federal",
       "impacto": "medio",
       "data": "2026-09-14",
-      "fonte": "Portal Contábeis",
-      "url": "https://www.contabeis.com.br/noticias/79383/cbs-2027-tcu-recebera-ainda-hoje-14-proposta-para-calcular-aliquota/",
+      "fonte": "Jornal Contábil",
+      "url": "https://jornalcontabil.com.br/noticia/cfc-entrega-a-receita-19-propostas-para-aprimorar-regras-do-simples/",
       "tags": [
-        "CBS",
-        "Alíquota"
+        "prazo"
       ]
     },
     {
@@ -217,30 +209,7 @@
       "fonte": "Jornal Contábil",
       "url": "https://jornalcontabil.com.br/noticia/efd-contribuicoes-e-reinf-vencem-nesta-terca-15-e-atraso-gera-multa/",
       "tags": []
-    },
-    {
-      "id": "definidas-as-regras-do-imposto-de-renda-na-venda-de-bens-por-orcasais",
-      "titulo": "Definidas as regras do Imposto de Renda na venda de bens por casais",
-      "resumo": "Entendimento unifica cálculo do lucro e divide o imposto em partes iguais entre o casal O post Definidas as regras do Imposto de Renda na venda de bens por casais apareceu primeiro em Jornal Contábil - Independência e compromisso .",
-      "esfera": "Federal",
-      "impacto": "baixo",
-      "data": "2026-09-14",
-      "fonte": "Jornal Contábil",
-      "url": "https://jornalcontabil.com.br/noticia/definidas-as-regras-do-imposto-de-renda-na-venda-de-bens-por-casais/",
-      "tags": []
-    },
-    {
-      "id": "simples-nacional-h-brido-vale-a-pena-optar-em-2027--aleapena",
-      "titulo": "Simples Nacional Híbrido: Vale a Pena Optar em 2027?",
-      "resumo": "Imagine duas empresas quase idênticas, vendendo o mesmo serviço pelo mesmo preço. Uma delas escolheu o Simples Nacional híbrido. A outra manteve tudo dentro do regime unificado tradicional. Para o cliente que compra dessas duas empresas, essa diferença pode significar economia re",
-      "esfera": "Federal",
-      "impacto": "medio",
-      "data": "2026-09-12",
-      "fonte": "Jornal Contábil",
-      "url": "https://jornalcontabil.com.br/noticia/simples-nacional-hibrido-vale-a-pena/",
-      "tags": [
-        "Simples Nacional"
-      ]
     }
-  ]
+  ],
+  "alertas_reforma": []
 }

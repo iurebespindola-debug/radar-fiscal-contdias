@@ -21,44 +21,32 @@
         "url": "https://cfc.org.br/noticias/cfc-apresenta-19-pontos-de-aprimoramento-na-regulamentacao-do-simples-nacional/",
         "fonte": "Conselho Federal de Contabilidade (CFC)",
         "impacto": "medio"
-      },
-      {
-        "titulo": "Simples Nacional: 26 municípios assumem cobrança de débitos em outubro",
-        "url": "https://www.contabeis.com.br/noticias/79384/simples-nacional-26-municipios-assumem-cobranca-de-debitos-em-outubro/",
-        "fonte": "Portal Contábeis",
-        "impacto": "medio"
-      },
-      {
-        "titulo": "CFC apresenta 19 pontos para aprimorar o Simples Nacional",
-        "url": "https://www.contabeis.com.br/noticias/79385/cfc-apresenta-19-pontos-para-aprimorar-o-simples-nacional/",
-        "fonte": "Portal Contábeis",
-        "impacto": "medio"
-      },
-      {
-        "titulo": "Simples Nacional Híbrido: Vale a Pena Optar em 2027?",
-        "url": "https://jornalcontabil.com.br/noticia/simples-nacional-hibrido-vale-a-pena/",
-        "fonte": "Jornal Contábil",
-        "impacto": "medio"
       }
     ],
     "demais_mudancas": [
       {
-        "titulo": "Reforma tributária: loteamento e parcelamento do solo",
-        "url": "https://www.contabeis.com.br/noticias/79394/reforma-tributaria-loteamento-e-parcelamento-do-solo/",
+        "titulo": "Receita Federal publica nova documentação técnica das APIs de apuração da CBS",
+        "url": "https://www.gov.br/receitafederal/pt-br/assuntos/noticias/2026/setembro/receita-federal-publica-nova-documentacao-tecnica-das-apis-de-apuracao-de-cbs",
+        "fonte": "Receita Federal",
+        "impacto": "medio"
+      },
+      {
+        "titulo": "Reforma Tributária e CSC: Impactos em Centros Compartilhados",
+        "url": "https://www.contabeis.com.br/noticias/79398/reforma-tributaria-e-csc-impactos-em-centros-compartilhados/",
+        "fonte": "Portal Contábeis",
+        "impacto": "alto"
+      },
+      {
+        "titulo": "IBS: Receita esclarece IR sobre venda de bem de casal",
+        "url": "https://www.contabeis.com.br/noticias/79391/ibs-receita-esclarece-ir-sobre-venda-de-bem-de-casal/",
         "fonte": "Portal Contábeis",
         "impacto": "medio"
       },
       {
-        "titulo": "IBS: Comitê busca parceiros para devolver créditos",
-        "url": "https://www.contabeis.com.br/noticias/79386/ibs-comite-busca-parceiros-para-devolver-creditos/",
-        "fonte": "Portal Contábeis",
-        "impacto": "medio"
-      },
-      {
-        "titulo": "CBS 2027: TCU receberá ainda hoje (14) proposta para calcular alíquota",
-        "url": "https://www.contabeis.com.br/noticias/79383/cbs-2027-tcu-recebera-ainda-hoje-14-proposta-para-calcular-aliquota/",
-        "fonte": "Portal Contábeis",
-        "impacto": "medio"
+        "titulo": "Receita atende contadores e anuncia APIs gratuitas para a CBS",
+        "url": "https://jornalcontabil.com.br/noticia/receita-atende-contadores-e-anuncia-apis-gratuitas-para-a-cbs/",
+        "fonte": "Jornal Contábil",
+        "impacto": "alto"
       },
       {
         "titulo": "Reforma Tributária em 2027: a empresa que ainda está discutindo alíquota está olhando para o problema errado",
