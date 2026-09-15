@@ -988,6 +988,113 @@ def verificar_e_atualizar_base_iss():
 
 
 # =========================================================================
+# CONSULTA cClassTrib — atualização automática da tabela de Classificação
+# Tributária do IBS/CBS
+# =========================================================================
+# A tabela oficial de cClassTrib (164 códigos, por CST) é publicada pelo
+# Portal da NF-e / Portal DFe SVRS e reproduzida de forma bem estruturada
+# pelo buscadorncm.com.br (agregador, não fonte oficial). Como são só ~164
+# códigos, embutimos a base inteira no painel (mesmo formato comprimido já
+# usado na Consulta ISS) em vez de consultar ao vivo a cada busca — fica
+# instantâneo para o usuário e não depende da disponibilidade do site
+# deles no momento da busca.
+
+CCLASSTRIB_URL = "https://buscadorncm.com.br/cclasstrib"
+CCLASSTRIB_ESTADO_PATH = BASE_DIR / "radar_cclasstrib_estado.json"
+PADRAO_CCLASSTRIB_DATA = re.compile(r'(const CCLASSTRIB_DATA_B64 = ")[A-Za-z0-9+/=]*(";)')
+PADRAO_CCLASSTRIB_ATUALIZADO = re.compile(r'(const CCLASSTRIB_ATUALIZADO_EM = ")[^"]*(";)')
+
+
+def _construir_base_cclasstrib(html):
+    """Extrai os 164 códigos de cClassTrib (código, CST, nome do CST,
+    selo de tratamento tributário e descrição) do HTML público de
+    buscadorncm.com.br/cclasstrib. Devolve (itens, data_publicacao) —
+    data_publicacao vem do rodapé da própria página ("publicação mais
+    recente em DD/MM/AAAA") e é o que usamos para saber se algo mudou."""
+    m = re.search(r'publica[çc][ãa]o mais recente em\s*<strong>(\d{2}/\d{2}/\d{4})</strong>', html)
+    data_publicacao = m.group(1) if m else None
+
+    soup = BeautifulSoup(html, "html.parser")
+    itens = []
+    grupo_atual = {"cst": None, "cst_nome": None}
+    for el in soup.find_all(["h2", "a"]):
+        if el.name == "h2":
+            link_cst = el.find("a", href=re.compile(r"^/cst/ibs-cbs/"))
+            if not link_cst:
+                continue
+            cst_codigo = link_cst.get_text(strip=True)
+            cst_nome = el.get_text(" ", strip=True).replace(cst_codigo, "", 1).strip()
+            grupo_atual = {"cst": cst_codigo, "cst_nome": cst_nome}
+        elif "cct-item" in (el.get("class") or []):
+            mcod = re.match(r"^/cclasstrib/(\d{6})$", el.get("href", ""))
+            if not mcod:
+                continue
+            spans = el.find_all("span")
+            badge = spans[1].get_text(strip=True) if len(spans) >= 2 else None
+            p = el.find("p")
+            itens.append({
+                "codigo": mcod.group(1),
+                "cst": grupo_atual["cst"],
+                "cst_nome": grupo_atual["cst_nome"],
+                "badge": badge or None,
+                "descricao": p.get_text(strip=True) if p else "",
+            })
+    return itens, data_publicacao
+
+
+def _substituir_dados_cclasstrib_no_html(novo_b64, data_exibicao, caminho_html=HTML_PATH):
+    if not caminho_html.exists():
+        return False
+    html = caminho_html.read_text(encoding="utf-8")
+    html, n1 = PADRAO_CCLASSTRIB_DATA.subn(lambda m: m.group(1) + novo_b64 + m.group(2), html, count=1)
+    if n1 == 0:
+        return False
+    html, _ = PADRAO_CCLASSTRIB_ATUALIZADO.subn(lambda m: m.group(1) + data_exibicao + m.group(2), html, count=1)
+    caminho_html.write_text(html, encoding="utf-8")
+    return True
+
+
+def verificar_e_atualizar_base_cclasstrib():
+    """
+    Checa se o buscadorncm.com.br publicou uma versão mais recente da
+    tabela de cClassTrib (pela data de "publicação mais recente" no
+    rodapé da página deles). Se sim, baixa, reconstrói e substitui a base
+    embutida na Consulta cClassTrib. Retorna (atualizou: bool, mensagem).
+    """
+    try:
+        resp = requests.get(CCLASSTRIB_URL, headers=HEADERS_PADRAO, timeout=TIMEOUT)
+        resp.raise_for_status()
+        resp.encoding = "utf-8"
+    except Exception as e:
+        return False, f"não consegui checar a página de cClassTrib: {e}"
+
+    itens, data_publicacao = _construir_base_cclasstrib(resp.text)
+    if not itens:
+        return False, "a página veio sem nenhum código reconhecível — não mexi na base para não estragar nada"
+
+    try:
+        estado = json.loads(CCLASSTRIB_ESTADO_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        estado = {}
+
+    if estado.get("publicado_em") == data_publicacao and estado.get("qtd") == len(itens):
+        return False, "base de cClassTrib sem mudanças desde a última verificação"
+
+    json_txt = json.dumps(itens, ensure_ascii=False, separators=(",", ":"))
+    novo_b64 = base64.b64encode(gzip.compress(json_txt.encode("utf-8"), compresslevel=9)).decode("ascii")
+    data_exibicao = data_publicacao or datetime.now(TZ_BR).strftime("%d/%m/%Y")
+
+    if not _substituir_dados_cclasstrib_no_html(novo_b64, data_exibicao):
+        return False, "baixei a base nova mas não consegui substituir no HTML (marcador não encontrado)"
+
+    CCLASSTRIB_ESTADO_PATH.write_text(
+        json.dumps({"publicado_em": data_publicacao, "qtd": len(itens)}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return True, f"base de cClassTrib atualizada — {len(itens)} códigos (publicação de {data_exibicao})"
+
+
+# =========================================================================
 # BOLETIM POR E-MAIL (opcional)
 # =========================================================================
 
@@ -1310,6 +1417,13 @@ def main():
         print(f"[iss] {msg_iss}")
     except Exception as e:
         print(f"[iss] Erro inesperado ao checar a base de ISS: {e}")
+
+    print("\nChecando se a tabela de cClassTrib mudou...")
+    try:
+        atualizou_cct, msg_cct = verificar_e_atualizar_base_cclasstrib()
+        print(f"[cclasstrib] {msg_cct}")
+    except Exception as e:
+        print(f"[cclasstrib] Erro inesperado ao checar a tabela de cClassTrib: {e}")
 
     if ok and publicar_online:
         publicar_no_github()

@@ -10,6 +10,8 @@ Tem ainda a **Central da Reforma Tributária** (aba **⚖ Reforma Tributária**,
 
 O cronograma, a obrigatoriedade na NF-e e a base de cálculo também são **monitorados todo dia**: se alguma notícia da coleta mencionar algo que sugira mudança de norma (uma nova Nota Técnica, prorrogação/antecipação de prazo, alteração na LC 214, mudança na base de cálculo), aparece um banner de alerta vermelho no topo da aba Reforma Tributária e um aviso no boletim por e-mail — mas, pelo mesmo motivo da Consulta ISS, o conteúdo jurídico não é reescrito sozinho; alguém revisa e pede pra eu atualizar o texto se for o caso.
 
+Tem também a sub-aba **🔎 cClassTrib**, dentro da Reforma Tributária: os 164 códigos oficiais de Classificação Tributária do IBS/CBS, organizados por CST, com busca instantânea por código, palavra-chave ou CST (ex.: `410030`, `exportação`, `200`). Como são só 164 códigos, a base inteira fica embutida no painel (mesma técnica da Consulta ISS) e a busca é local — não depende de internet a cada tecla. O script confere todo dia se o buscadorncm.com.br publicou uma versão mais nova da tabela e já atualiza a base sozinho quando isso acontece.
+
 Você recebeu 3 arquivos:
 
 | Arquivo | Para que serve |

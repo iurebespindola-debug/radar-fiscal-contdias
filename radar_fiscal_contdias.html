@@ -432,6 +432,36 @@
   .reforma-hub .iss-breakdown td.code{ font-family:"IBM Plex Mono", monospace; }
   .reforma-hub .iss-breakdown td.rate{ font-variant-numeric:tabular-nums; text-align:right; font-weight:600; }
 
+  /* -- Consulta cClassTrib -- */
+  .rf-cct-busca{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .rf-cct-busca input[type="text"]{
+    flex:1; padding:11px 14px; border-radius:8px; border:1px solid var(--cinza-300);
+    background:var(--branco); font-size:14px; color:var(--cinza-900);
+  }
+  .rf-cct-busca input[type="text"]:focus{ border-color:var(--verde-600); outline:2px solid var(--verde-100); }
+  .rf-cct-contagem{ font-size:12px; color:var(--cinza-600); white-space:nowrap; }
+  .rf-cct-tabela-wrap{ overflow-x:auto; border:1px solid var(--cinza-200); border-radius:10px; max-height:520px; overflow-y:auto; }
+  .rf-cct-tabela{ width:100%; border-collapse:collapse; font-size:13px; }
+  .rf-cct-tabela thead th{
+    position:sticky; top:0; background:var(--verde-50); text-align:left; padding:9px 12px;
+    font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--verde-800);
+    border-bottom:1px solid var(--cinza-200); white-space:nowrap;
+  }
+  .rf-cct-tabela td{ padding:9px 12px; border-bottom:1px solid var(--cinza-100); vertical-align:top; }
+  .rf-cct-tabela tr:last-child td{ border-bottom:none; }
+  .rf-cct-tabela tr:hover td{ background:var(--cinza-50); }
+  .rf-cct-codigo{ font-family:"IBM Plex Mono", monospace; font-weight:700; color:var(--verde-800); white-space:nowrap; }
+  .rf-cct-cst{ white-space:nowrap; }
+  .rf-cct-cst b{ font-family:"IBM Plex Mono", monospace; }
+  .rf-cct-cst span{ display:block; font-size:11px; color:var(--cinza-600); }
+  .rf-cct-badge{
+    display:inline-block; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:999px;
+    background:var(--verde-100); color:var(--verde-800); white-space:nowrap;
+  }
+  .rf-cct-badge.encerrado{ background:var(--cinza-200); color:var(--cinza-700); }
+  .rf-cct-vazio{ text-align:center; padding:30px; color:var(--cinza-600); font-size:13px; }
+  .rf-cct-rodape{ font-size:11.5px; color:var(--cinza-600); line-height:1.55; margin-top:14px; }
+
   /* -- Base de cálculo -- */
   .rf-basecalculo{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
   .rf-bc-coluna{ border-radius:10px; padding:16px; }
@@ -641,6 +671,10 @@
             <span class="rf-mega-selo">NCM</span>
             <span class="rf-mega-texto"><b>Consulte seu produto</b><span>cClassTrib, CST e confirmação da Receita</span></span>
           </a>
+          <a class="rf-mega-item" href="#" data-sub="cclasstrib">
+            <span class="rf-mega-selo">CT</span>
+            <span class="rf-mega-texto"><b>cClassTrib + CST IBS/CBS</b><span>Os 164 códigos, busque por código ou palavra-chave</span></span>
+          </a>
           <a class="rf-mega-item" href="#" data-sub="historico">
             <span class="rf-mega-selo">HIST</span>
             <span class="rf-mega-texto"><b>Histórico da Reforma</b><span>Evolução, Simples Nacional e IBS/CBS/IS</span></span>
@@ -748,6 +782,7 @@
     <div class="rf-subnav">
       <button type="button" class="rf-subtab ativo" data-subvista="geral">📋 Visão geral</button>
       <button type="button" class="rf-subtab" data-subvista="produto">🔍 Consulte seu produto</button>
+      <button type="button" class="rf-subtab" data-subvista="cclasstrib">🔎 cClassTrib</button>
       <button type="button" class="rf-subtab" data-subvista="historico">📈 Histórico</button>
     </div>
 
@@ -827,6 +862,30 @@
         </div>
         <div class="rf-produto-rodape">
           Fonte: <a href="https://buscadorncm.com.br" target="_blank" rel="noopener">buscadorncm.com.br</a> (agregador, consultado ao vivo) cruzado com a <a href="https://piloto-cbs.tributos.gov.br" target="_blank" rel="noopener">Calculadora oficial da Receita Federal/Serpro</a>. Muitos benefícios são <strong>condicionais</strong> — confirme se a descrição real do produto se encaixa na condição exigida, ou peça uma conferência completa para planilhas com vários produtos.
+        </div>
+      </div>
+    </div>
+
+    <div class="rf-subvista" data-subvista-alvo="cclasstrib" hidden>
+      <div class="rf-secao" id="rf-sec-cclasstrib">
+        <div class="rf-secao-cabecalho">
+          <h2>🔎 Consulta cClassTrib</h2>
+          <span class="rf-secao-nota">Os 164 códigos de Classificação Tributária do IBS/CBS, por CST</span>
+        </div>
+        <div class="rf-cct-busca">
+          <input type="text" id="cct-busca" autocomplete="off" placeholder="Código, palavra-chave ou CST (ex.: 410030, cesta básica, exportação, 200)…">
+          <span class="rf-cct-contagem" id="cct-contagem"></span>
+        </div>
+        <div class="rf-cct-tabela-wrap">
+          <table class="rf-cct-tabela">
+            <thead><tr><th>Código</th><th>CST</th><th>Tratamento</th><th>Descrição</th></tr></thead>
+            <tbody id="cct-corpo"></tbody>
+          </table>
+        </div>
+        <div class="rf-cct-vazio" id="cct-vazio" hidden>Nenhum código encontrado para essa busca.</div>
+        <div class="rf-cct-rodape">
+          Fonte: <a href="https://buscadorncm.com.br/cclasstrib" target="_blank" rel="noopener">buscadorncm.com.br</a> (agregador, não é fonte oficial) — base original do Portal da NF-e (IT 2025.002) / Portal DFe SVRS.
+          Base local, atualizada <b id="cct-atualizado-em">—</b>. Lista oficial de cClassTrib — não é específica de um NCM; escolha o código pela natureza real da operação. Um mesmo código pode ter regras adicionais (documentos fiscais aceitos, base legal); para o detalhe completo de um código, consulte a fonte.
         </div>
       </div>
     </div>
@@ -1897,6 +1956,89 @@
   document.getElementById('ncm-input').addEventListener('keydown', function(e){
     if (e.key === 'Enter') consultarNcm();
   });
+})();
+</script>
+
+<script>
+(function(){
+  // Base local dos 164 códigos de cClassTrib (comprimida com gzip e
+  // codificada em base64), atualizada pelo scraper quando a fonte publica
+  // uma versão nova — mesma técnica já usada na Consulta ISS. Busca é toda
+  // client-side, sem depender de rede a cada tecla.
+  const CCLASSTRIB_DATA_B64 = "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";
+  const CCLASSTRIB_ATUALIZADO_EM = "22/06/2026";
+
+  var CCT_ITENS = [];
+
+  function escapaHtml(s){
+    return (s || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function normalizaTexto(s){
+    return (s || '').toString().normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  }
+
+  async function carregarCct(){
+    var contagem = document.getElementById('cct-contagem');
+    if (!CCLASSTRIB_DATA_B64){
+      if (contagem) contagem.textContent = 'base indisponível no momento';
+      return;
+    }
+    try {
+      var bin = atob(CCLASSTRIB_DATA_B64);
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      var ds = new DecompressionStream('gzip');
+      var stream = new Blob([bytes]).stream().pipeThrough(ds);
+      var text = await new Response(stream).text();
+      CCT_ITENS = JSON.parse(text).map(function(it){
+        it._busca = normalizaTexto(it.codigo + ' ' + it.cst + ' ' + it.cst_nome + ' ' + it.descricao + ' ' + (it.badge || ''));
+        return it;
+      });
+      var atEl = document.getElementById('cct-atualizado-em');
+      if (atEl) atEl.textContent = CCLASSTRIB_ATUALIZADO_EM || '—';
+      renderCct('');
+    } catch (err) {
+      if (contagem) contagem.textContent = 'não foi possível carregar a base neste navegador';
+      console.error(err);
+    }
+  }
+
+  function renderCct(consulta){
+    var corpo = document.getElementById('cct-corpo');
+    var vazio = document.getElementById('cct-vazio');
+    var contagem = document.getElementById('cct-contagem');
+    if (!corpo) return;
+    var q = normalizaTexto((consulta || '').trim());
+    var lista = q ? CCT_ITENS.filter(function(it){ return it._busca.indexOf(q) !== -1; }) : CCT_ITENS;
+
+    contagem.textContent = lista.length + ' de ' + CCT_ITENS.length + ' código(s)';
+
+    if (!lista.length){
+      corpo.innerHTML = '';
+      vazio.hidden = false;
+      return;
+    }
+    vazio.hidden = true;
+    corpo.innerHTML = lista.map(function(it){
+      var badgeHtml = it.badge
+        ? '<span class="rf-cct-badge' + (it.badge === 'encerrado' ? ' encerrado' : '') + '">' + escapaHtml(it.badge) + '</span>'
+        : '';
+      return '<tr>' +
+        '<td class="rf-cct-codigo"><a href="https://buscadorncm.com.br/cclasstrib/' + it.codigo + '" target="_blank" rel="noopener">' + it.codigo + '</a></td>' +
+        '<td class="rf-cct-cst"><b>' + escapaHtml(it.cst) + '</b><span>' + escapaHtml(it.cst_nome) + '</span></td>' +
+        '<td>' + badgeHtml + '</td>' +
+        '<td>' + escapaHtml(it.descricao) + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  var cctBusca = document.getElementById('cct-busca');
+  if (cctBusca){
+    cctBusca.addEventListener('input', function(e){ renderCct(e.target.value); });
+  }
+
+  carregarCct();
 })();
 </script>
 
