@@ -433,6 +433,28 @@
   .reforma-hub .iss-breakdown td.rate{ font-variant-numeric:tabular-nums; text-align:right; font-weight:600; }
 
   /* -- Consulta cClassTrib -- */
+  .rf-cct-conferidor{
+    background:var(--verde-50); border:1px solid var(--verde-100); border-radius:10px;
+    padding:14px 16px; margin-bottom:18px; display:flex; flex-direction:column; gap:10px;
+  }
+  .rf-cct-conferidor-titulo{ font-size:12.5px; font-weight:700; color:var(--verde-800); }
+  .rf-cct-conferidor-campos{ display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
+  .rf-cct-conferidor-campos > div{ display:flex; flex-direction:column; gap:4px; }
+  .rf-cct-conferidor-campos label{ font-size:11px; font-weight:600; color:var(--cinza-600); text-transform:uppercase; letter-spacing:.02em; }
+  .rf-cct-conferidor-campos input{
+    width:110px; padding:8px 10px; border-radius:7px; border:1px solid var(--cinza-300);
+    font-family:"IBM Plex Mono", monospace; font-size:13.5px; background:var(--branco);
+  }
+  .rf-cct-conferidor-campos input:focus{ border-color:var(--verde-600); outline:2px solid var(--verde-100); }
+  .rf-cct-conferidor-campos button{
+    background:var(--verde-700); color:var(--branco); border:none; padding:9px 16px; border-radius:7px;
+    font-size:13px; font-weight:600; cursor:pointer; height:37px;
+  }
+  .rf-cct-conferidor-campos button:hover{ background:var(--verde-800); }
+  .rf-cct-conferidor-resultado{ font-size:13px; line-height:1.55; padding:11px 13px; border-radius:8px; }
+  .rf-cct-conferidor-resultado.ok{ background:var(--verde-100); color:var(--verde-800); }
+  .rf-cct-conferidor-resultado.erro{ background:var(--alto-bg); color:var(--alto); }
+
   .rf-cct-busca{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
   .rf-cct-busca input[type="text"]{
     flex:1; padding:11px 14px; border-radius:8px; border:1px solid var(--cinza-300);
@@ -872,6 +894,22 @@
           <h2>🔎 Consulta cClassTrib</h2>
           <span class="rf-secao-nota">Os 164 códigos de Classificação Tributária do IBS/CBS, por CST</span>
         </div>
+        <div class="rf-cct-conferidor">
+          <div class="rf-cct-conferidor-titulo">Conferidor CST × cClassTrib — o par da sua nota é válido?</div>
+          <div class="rf-cct-conferidor-campos">
+            <div>
+              <label for="cct-conf-cst">CST</label>
+              <input type="text" id="cct-conf-cst" placeholder="200" maxlength="3" autocomplete="off" inputmode="numeric">
+            </div>
+            <div>
+              <label for="cct-conf-codigo">cClassTrib</label>
+              <input type="text" id="cct-conf-codigo" placeholder="200001" maxlength="6" autocomplete="off" inputmode="numeric">
+            </div>
+            <button type="button" id="cct-conf-botao">Conferir par</button>
+          </div>
+          <div class="rf-cct-conferidor-resultado" id="cct-conf-resultado" hidden></div>
+        </div>
+
         <div class="rf-cct-busca">
           <input type="text" id="cct-busca" autocomplete="off" placeholder="Código, palavra-chave ou CST (ex.: 410030, cesta básica, exportação, 200)…">
           <span class="rf-cct-contagem" id="cct-contagem"></span>
@@ -2036,6 +2074,53 @@
   var cctBusca = document.getElementById('cct-busca');
   if (cctBusca){
     cctBusca.addEventListener('input', function(e){ renderCct(e.target.value); });
+  }
+
+  // Conferidor CST × cClassTrib — confirma se o código informado realmente
+  // pertence ao CST informado (útil pra checar se o par lançado numa nota
+  // está certo). Usa a mesma base local, sem precisar de rede.
+  function conferirPar(){
+    var cstDigitado = (document.getElementById('cct-conf-cst').value || '').trim().padStart(3, '0');
+    var codigoDigitado = (document.getElementById('cct-conf-codigo').value || '').replace(/\D/g, '');
+    var resEl = document.getElementById('cct-conf-resultado');
+    resEl.hidden = false;
+
+    if (!codigoDigitado){
+      resEl.className = 'rf-cct-conferidor-resultado erro';
+      resEl.textContent = 'Digite pelo menos o código do cClassTrib.';
+      return;
+    }
+    if (!CCT_ITENS.length){
+      resEl.className = 'rf-cct-conferidor-resultado erro';
+      resEl.textContent = 'A base ainda está carregando — tente de novo em instantes.';
+      return;
+    }
+    var codigoCompleto = codigoDigitado.padStart(6, '0');
+    var item = CCT_ITENS.filter(function(it){ return it.codigo === codigoCompleto; })[0];
+    if (!item){
+      resEl.className = 'rf-cct-conferidor-resultado erro';
+      resEl.textContent = 'cClassTrib ' + codigoCompleto + ' não encontrado na tabela oficial.';
+      return;
+    }
+    var cstOk = !document.getElementById('cct-conf-cst').value.trim() || cstDigitado === item.cst;
+    if (!cstOk){
+      resEl.className = 'rf-cct-conferidor-resultado erro';
+      resEl.innerHTML = '⚠ Não bate: cClassTrib <b>' + item.codigo + '</b> pertence ao CST <b>' + escapaHtml(item.cst) +
+        '</b> (' + escapaHtml(item.cst_nome) + '), não ao CST <b>' + escapaHtml(document.getElementById('cct-conf-cst').value.trim()) + '</b> informado.';
+      return;
+    }
+    resEl.className = 'rf-cct-conferidor-resultado ok';
+    resEl.innerHTML = '✓ Válido: cClassTrib <b>' + item.codigo + '</b> pertence ao CST <b>' + escapaHtml(item.cst) +
+      '</b> (' + escapaHtml(item.cst_nome) + ').' + (item.badge ? ' Tratamento: <b>' + escapaHtml(item.badge) + '</b>.' : '');
+  }
+
+  var cctConfBotao = document.getElementById('cct-conf-botao');
+  if (cctConfBotao){
+    cctConfBotao.addEventListener('click', conferirPar);
+    ['cct-conf-cst', 'cct-conf-codigo'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('keydown', function(e){ if (e.key === 'Enter') conferirPar(); });
+    });
   }
 
   carregarCct();
