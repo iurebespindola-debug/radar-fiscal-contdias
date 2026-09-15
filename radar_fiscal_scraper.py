@@ -23,6 +23,7 @@ como fazer isso passo a passo).
 import base64
 import csv
 import gzip
+import hashlib
 import io
 import json
 import os
@@ -1095,6 +1096,110 @@ def verificar_e_atualizar_base_cclasstrib():
 
 
 # =========================================================================
+# REJEIÇÕES DA NF-e — atualização automática da tabela de códigos cStat
+# =========================================================================
+# Mesma lógica da Consulta cClassTrib: são pouco mais de mil códigos, cabe
+# embutir a base inteira no painel (comprimida) e buscar localmente. Como
+# esta página não expõe uma data de publicação, o critério de "mudou algo"
+# é um hash do conteúdo extraído (pega qualquer edição de texto, não só
+# código novo/removido).
+
+REJEICOES_URL = "https://buscadorncm.com.br/nfe/rejeicoes"
+REJEICOES_ESTADO_PATH = BASE_DIR / "radar_rejeicoes_estado.json"
+PADRAO_REJEICOES_DATA = re.compile(r'(const REJEICOES_DATA_B64 = ")[A-Za-z0-9+/=]*(";)')
+PADRAO_REJEICOES_ATUALIZADO = re.compile(r'(const REJEICOES_ATUALIZADO_EM = ")[^"]*(";)')
+
+
+def _construir_base_rejeicoes(html):
+    """Extrai os códigos de status/rejeição da NF-e (código, grupo temático,
+    descrição do motivo e se há regra de validação detalhada na ficha) do
+    HTML público de buscadorncm.com.br/nfe/rejeicoes."""
+    soup = BeautifulSoup(html, "html.parser")
+    itens = []
+    grupo_atual = None
+    for el in soup.find_all(["h2", "tr"]):
+        if el.name == "h2":
+            span_contagem = el.find("span")
+            nome_grupo = el.get_text(" ", strip=True)
+            if span_contagem:
+                nome_grupo = nome_grupo.replace(span_contagem.get_text(strip=True), "").strip()
+            grupo_atual = nome_grupo
+        elif "rej-row" in (el.get("class") or []):
+            mcod = re.match(r"^/nfe/rejeicoes/(\d+)$", el.get("data-href", ""))
+            if not mcod:
+                continue
+            tds = el.find_all("td")
+            if len(tds) < 2:
+                continue
+            td_desc = tds[1]
+            badge = td_desc.find("span")
+            tem_regra = badge is not None and "REGRA" in badge.get_text()
+            if badge:
+                badge.extract()
+            itens.append({
+                "codigo": mcod.group(1),
+                "grupo": grupo_atual,
+                "descricao": td_desc.get_text(strip=True),
+                "regra": tem_regra,
+            })
+    return itens
+
+
+def _substituir_dados_rejeicoes_no_html(novo_b64, data_exibicao, caminho_html=HTML_PATH):
+    if not caminho_html.exists():
+        return False
+    html = caminho_html.read_text(encoding="utf-8")
+    html, n1 = PADRAO_REJEICOES_DATA.subn(lambda m: m.group(1) + novo_b64 + m.group(2), html, count=1)
+    if n1 == 0:
+        return False
+    html, _ = PADRAO_REJEICOES_ATUALIZADO.subn(lambda m: m.group(1) + data_exibicao + m.group(2), html, count=1)
+    caminho_html.write_text(html, encoding="utf-8")
+    return True
+
+
+def verificar_e_atualizar_base_rejeicoes():
+    """
+    Checa se a tabela de rejeições da NF-e mudou (por hash do conteúdo,
+    já que a fonte não publica uma data). Se sim, baixa, reconstrói e
+    substitui a base embutida na Consulta de Rejeições. Retorna
+    (atualizou: bool, mensagem).
+    """
+    try:
+        resp = requests.get(REJEICOES_URL, headers=HEADERS_PADRAO, timeout=TIMEOUT)
+        resp.raise_for_status()
+        resp.encoding = "utf-8"
+    except Exception as e:
+        return False, f"não consegui checar a página de rejeições: {e}"
+
+    itens = _construir_base_rejeicoes(resp.text)
+    if not itens:
+        return False, "a página veio sem nenhum código reconhecível — não mexi na base para não estragar nada"
+
+    json_txt = json.dumps(itens, ensure_ascii=False, separators=(",", ":"))
+    hash_atual = hashlib.sha256(json_txt.encode("utf-8")).hexdigest()
+
+    try:
+        estado = json.loads(REJEICOES_ESTADO_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        estado = {}
+
+    if estado.get("hash") == hash_atual:
+        return False, "base de rejeições sem mudanças desde a última verificação"
+
+    novo_b64 = base64.b64encode(gzip.compress(json_txt.encode("utf-8"), compresslevel=9)).decode("ascii")
+    data_exibicao = datetime.now(TZ_BR).strftime("%d/%m/%Y")
+
+    if not _substituir_dados_rejeicoes_no_html(novo_b64, data_exibicao):
+        return False, "baixei a base nova mas não consegui substituir no HTML (marcador não encontrado)"
+
+    REJEICOES_ESTADO_PATH.write_text(
+        json.dumps({"hash": hash_atual, "qtd": len(itens), "atualizado_em": data_exibicao}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return True, f"base de rejeições atualizada — {len(itens)} códigos"
+
+
+# =========================================================================
 # BOLETIM POR E-MAIL (opcional)
 # =========================================================================
 
@@ -1424,6 +1529,13 @@ def main():
         print(f"[cclasstrib] {msg_cct}")
     except Exception as e:
         print(f"[cclasstrib] Erro inesperado ao checar a tabela de cClassTrib: {e}")
+
+    print("\nChecando se a tabela de rejeições da NF-e mudou...")
+    try:
+        atualizou_rej, msg_rej = verificar_e_atualizar_base_rejeicoes()
+        print(f"[rejeicoes] {msg_rej}")
+    except Exception as e:
+        print(f"[rejeicoes] Erro inesperado ao checar a tabela de rejeições: {e}")
 
     if ok and publicar_online:
         publicar_no_github()

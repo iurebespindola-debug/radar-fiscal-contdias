@@ -12,7 +12,9 @@ O cronograma, a obrigatoriedade na NF-e e a base de cálculo também são **moni
 
 A Consulta de produto também já mostra, na mesma busca, **outros tributos do produto** — alíquota de IPI, Imposto de Importação (II), se tem Substituição Tributária do ICMS (com os CESTs aplicáveis) e a faixa de MVA por estado — tudo extraído da mesma página consultada, sem precisar de uma segunda chamada.
 
-Tem também a sub-aba **🔎 cClassTrib**, dentro da Reforma Tributária: os 164 códigos oficiais de Classificação Tributária do IBS/CBS, organizados por CST, com busca instantânea por código, palavra-chave ou CST (ex.: `410030`, `exportação`, `200`). Como são só 164 códigos, a base inteira fica embutida no painel (mesma técnica da Consulta ISS) e a busca é local — não depende de internet a cada tecla. O script confere todo dia se o buscadorncm.com.br publicou uma versão mais nova da tabela e já atualiza a base sozinho quando isso acontece.
+Tem também a sub-aba **🔎 cClassTrib**, dentro da Reforma Tributária: os 164 códigos oficiais de Classificação Tributária do IBS/CBS, organizados por CST, com busca instantânea por código, palavra-chave ou CST (ex.: `410030`, `exportação`, `200`) — inclui um **conferidor CST × cClassTrib** pra checar se o par lançado numa nota é válido. Como são só 164 códigos, a base inteira fica embutida no painel (mesma técnica da Consulta ISS) e a busca é local — não depende de internet a cada tecla. O script confere todo dia se o buscadorncm.com.br publicou uma versão mais nova da tabela e já atualiza a base sozinho quando isso acontece.
+
+E a sub-aba **⚠ Rejeições NF-e**: mais de 1.000 códigos de status/rejeição da NF-e, organizados por causa (Reforma Tributária, Schema XML, GTIN, Duplicidade, Certificado digital, entre outros), com busca e filtro por grupo. Mesma arquitetura das outras duas — base embutida, busca local, atualização diária automática (aqui por hash do conteúdo, já que a fonte não publica uma data de versão).
 
 Você recebeu 3 arquivos:
 
